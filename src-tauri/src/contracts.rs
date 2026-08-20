@@ -65,6 +65,40 @@ pub struct PlayerState {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub enum DownloadStatus {
+    Queued,
+    Downloading,
+    Completed,
+    Failed,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DownloadJob {
+    pub id: String,
+    pub source: String,
+    pub output_dir: String,
+    pub progress: f32,
+    pub status: DownloadStatus,
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DownloadToolsStatus {
+    pub yt_dlp: bool,
+    pub ffmpeg: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IntegrationStatus {
+    pub discord_configured: bool,
+    pub discord_connected: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AppSettings {
     pub theme: String,
     pub volume: f32,

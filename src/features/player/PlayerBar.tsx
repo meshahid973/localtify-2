@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Pause, Play, Repeat2, Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
+import { ListMusic, Pause, Play, Repeat2, Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
 import { motion } from "motion/react";
 import { AlbumArtwork } from "../../components/ui/AlbumArtwork";
 import { useLibraryStore } from "../library/library.store";
@@ -36,39 +36,40 @@ export function PlayerBar() {
   }
 
   return (
-    <footer className="fixed inset-x-0 bottom-0 z-40 h-[88px] border-t border-[#171717] bg-black">
-      <div className="grid h-full grid-cols-[minmax(190px,1fr)_minmax(320px,1.3fr)_minmax(170px,1fr)] items-center gap-5 px-4">
+    <footer className="fixed inset-x-0 bottom-0 z-40 h-[86px] border-t border-white/[0.07] bg-[#050505]">
+      <div className="grid h-full grid-cols-[minmax(220px,1fr)_minmax(340px,1.35fr)_minmax(190px,1fr)] items-center gap-5 px-4">
         <div className="flex min-w-0 items-center gap-3">
           <AlbumArtwork artworkKey={current?.artworkKey ?? "empty"} className="size-12 shrink-0 rounded-md" />
           <div className="min-w-0">
-            <p className="truncate text-[13px] font-medium">{current?.title ?? "Nothing playing"}</p>
-            <p className="mt-0.5 truncate text-[11px] text-[#777]">{current?.artistName ?? "Choose a song from your library"}</p>
+            <p className="truncate text-[12px] font-semibold text-[#ededeb]">{current?.title ?? "Nothing playing"}</p>
+            <p className="mt-0.5 truncate text-[10px] text-white/30">{current?.artistName ?? "Choose something from your library"}</p>
           </div>
         </div>
 
         <div className="flex min-w-0 flex-col items-center">
-          <div className="flex items-center gap-5 text-[#8a8a8a]">
-            <ControlButton active={player.shuffle} label="Shuffle" onClick={() => void toggleShuffle()}><Shuffle className="size-4" /></ControlButton>
-            <ControlButton label="Previous" onClick={() => playAdjacent(-1)}><SkipBack className="size-[18px] fill-current" /></ControlButton>
+          <div className="flex items-center gap-5 text-white/38">
+            <ControlButton active={player.shuffle} label="Shuffle" onClick={() => void toggleShuffle()}><Shuffle className="size-3.5" /></ControlButton>
+            <ControlButton label="Previous" onClick={() => playAdjacent(-1)}><SkipBack className="size-[17px] fill-current" /></ControlButton>
             <motion.button
               type="button"
               aria-label={playing ? "Pause" : "Play"}
               disabled={!current}
-              whileHover={current ? { scale: 1.06 } : undefined}
-              whileTap={current ? { scale: 0.94 } : undefined}
+              whileHover={current ? { scale: 1.045 } : undefined}
+              whileTap={current ? { scale: 0.95 } : undefined}
+              transition={{ type: "spring", stiffness: 460, damping: 28 }}
               onClick={() => void togglePlayback()}
-              className="grid size-9 place-items-center rounded-full bg-white text-black disabled:opacity-35"
+              className="grid size-9 place-items-center rounded-full bg-[#f5f5ef] text-black disabled:opacity-30"
             >
               {playing ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}
             </motion.button>
-            <ControlButton label="Next" onClick={() => playAdjacent(1)}><SkipForward className="size-[18px] fill-current" /></ControlButton>
+            <ControlButton label="Next" onClick={() => playAdjacent(1)}><SkipForward className="size-[17px] fill-current" /></ControlButton>
             <ControlButton active={player.repeat !== "off"} label={`Repeat ${player.repeat}`} onClick={() => void cycleRepeat()}>
-              <Repeat2 className="size-4" />
-              {player.repeat === "one" && <span className="absolute -right-1 -top-1 text-[8px] font-bold text-[#1ed760]">1</span>}
+              <Repeat2 className="size-3.5" />
+              {player.repeat === "one" && <span className="absolute -right-1 -top-1 text-[7px] font-bold text-[#1ed760]">1</span>}
             </ControlButton>
           </div>
 
-          <div className="mt-2 flex w-full max-w-[610px] items-center gap-2 text-[9px] tabular-nums text-[#666]">
+          <div className="mt-2 flex w-full max-w-[620px] items-center gap-2 text-[8px] tabular-nums text-white/24">
             <span className="w-9 text-right">{formatDuration(player.positionMs)}</span>
             <input
               aria-label="Playback position"
@@ -84,8 +85,9 @@ export function PlayerBar() {
           </div>
         </div>
 
-        <div className="ml-auto flex w-full max-w-[190px] items-center justify-end gap-2">
-          <button type="button" aria-label={player.muted ? "Unmute" : "Mute"} onClick={() => void toggleMute()} className="text-[#888] transition-colors hover:text-white">
+        <div className="ml-auto flex w-full max-w-[220px] items-center justify-end gap-2">
+          <ListMusic className="mr-2 size-4 text-white/25" />
+          <button type="button" aria-label={player.muted ? "Unmute" : "Mute"} onClick={() => void toggleMute()} className="text-white/38 transition-colors hover:text-white/75">
             {player.muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
           </button>
           <input
@@ -114,7 +116,7 @@ function ControlButton({ children, label, active = false, onClick }: { children:
       whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.92 }}
       onClick={onClick}
-      className={`relative transition-colors ${active ? "text-[#1ed760]" : "hover:text-white"}`}
+      className={`relative transition-colors ${active ? "text-[#1ed760]" : "hover:text-white/80"}`}
     >
       {children}
     </motion.button>

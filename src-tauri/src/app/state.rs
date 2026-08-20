@@ -2,13 +2,21 @@ use std::{path::Path, sync::Arc, time::Instant};
 
 use tauri::{AppHandle, Manager};
 
-use crate::{database::Database, library::LibraryWatcher, player::PlayerManager};
+use crate::{
+    database::Database,
+    discord::DiscordManager,
+    downloads::DownloadManager,
+    library::LibraryWatcher,
+    player::PlayerManager,
+};
 
 pub struct AppState {
     started_at: Instant,
     pub(crate) database: Arc<Database>,
     pub(crate) player: PlayerManager,
     pub(crate) watcher: LibraryWatcher,
+    pub(crate) downloads: DownloadManager,
+    pub(crate) discord: DiscordManager,
 }
 
 impl AppState {
@@ -17,6 +25,7 @@ impl AppState {
             .path()
             .app_data_dir()
             .map_err(|error| format!("Could not resolve Localtify app-data directory: {error}"))?;
+
         std::fs::create_dir_all(&data_dir)
             .map_err(|error| format!("Could not create {}: {error}", data_dir.display()))?;
 
@@ -37,6 +46,8 @@ impl AppState {
             database,
             player: PlayerManager::new(),
             watcher,
+            downloads: DownloadManager::new(),
+            discord: DiscordManager::new(),
         })
     }
 

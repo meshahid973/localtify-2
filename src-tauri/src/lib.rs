@@ -2,6 +2,8 @@ mod app;
 mod commands;
 mod contracts;
 mod database;
+mod discord;
+mod downloads;
 mod error;
 mod library;
 mod metadata;
@@ -33,6 +35,10 @@ pub fn run() {
             commands::player_toggle_mute,
             commands::player_set_shuffle,
             commands::player_set_repeat,
+            commands::get_download_tools,
+            commands::list_downloads,
+            commands::start_audio_download,
+            commands::get_integration_status,
         ])
         .run(tauri::generate_context!())
         .expect("failed to run Localtify");

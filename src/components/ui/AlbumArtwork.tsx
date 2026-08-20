@@ -1,14 +1,17 @@
+import { memo } from "react";
 import { Music2 } from "lucide-react";
 import { albumArtworkFor } from "../../ALBUM";
 
-export function AlbumArtwork({
+export const AlbumArtwork = memo(function AlbumArtwork({
   artworkKey,
   className = "",
   alt = "Album artwork",
+  eager = false,
 }: {
   artworkKey: string;
   className?: string;
   alt?: string;
+  eager?: boolean;
 }) {
   const source = albumArtworkFor(artworkKey);
 
@@ -18,6 +21,8 @@ export function AlbumArtwork({
         src={source}
         alt={alt}
         draggable={false}
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
         className={`object-cover ${className}`}
       />
     );
@@ -31,4 +36,4 @@ export function AlbumArtwork({
       <Music2 className="size-[28%]" strokeWidth={1.35} />
     </div>
   );
-}
+});

@@ -1,5 +1,6 @@
 export type PlaybackStatus = "stopped" | "playing" | "paused" | "loading" | "error";
 export type RepeatMode = "off" | "all" | "one";
+export type DownloadStatus = "queued" | "downloading" | "completed" | "failed";
 
 export interface Track {
   id: string;
@@ -36,6 +37,25 @@ export interface PlayerState {
   repeat: RepeatMode;
 }
 
+export interface DownloadJob {
+  id: string;
+  source: string;
+  outputDir: string;
+  progress: number;
+  status: DownloadStatus;
+  error: string | null;
+}
+
+export interface DownloadToolsStatus {
+  ytDlp: boolean;
+  ffmpeg: boolean;
+}
+
+export interface IntegrationStatus {
+  discordConfigured: boolean;
+  discordConnected: boolean;
+}
+
 export interface AppSettings {
   theme: "dark";
   volume: number;
@@ -52,9 +72,4 @@ export interface AppInfo {
 export interface HealthResponse {
   status: string;
   uptimeMs: number;
-}
-
-export interface AppError {
-  kind: "database" | "filesystem" | "audio" | "metadata" | "invalidInput" | "notFound" | "internal";
-  message: string;
 }

@@ -4,7 +4,10 @@ use tauri::{AppHandle, State};
 
 use crate::{
     app::AppState,
-    contracts::{AppSettings, LibrarySnapshot, PlayerState, RepeatMode, ScanResult},
+    contracts::{
+        AppSettings, DownloadJob, DownloadToolsStatus, IntegrationStatus, LibrarySnapshot,
+        PlayerState, RepeatMode, ScanResult,
+    },
     error::AppError,
     library::scan_folder,
     types::{AppInfo, BootstrapState, HealthResponse},
@@ -62,7 +65,12 @@ pub fn player_play_track(
         .database
         .track_source(&track_id)?
         .ok_or_else(|| AppError::not_found("Track no longer exists in the library"))?;
-    state.player.play(track, Path::new(&path))
+
+    let player_state = state.player.play(track, Path::new(&path))?;
+    if let Some(current) = player_state.current_track.as_ref() {
+        state.discord.update_track(current);
+    }
+    Ok(player_state)
 }
 
 #[tauri::command]
@@ -105,6 +113,30 @@ pub fn player_set_repeat(
     state: State<'_, AppState>,
 ) -> Result<PlayerState, AppError> {
     state.player.set_repeat(repeat)
+}
+
+#[tauri::command]
+pub fn get_download_tools(state: State<'_, AppState>) -> DownloadToolsStatus {
+    state.downloads.tools()
+}
+
+#[tauri::command]
+pub fn list_downloads(state: State<'_, AppState>) -> Result<Vec<DownloadJob>, AppError> {
+    state.downloads.list()
+}
+
+#[tauri::command]
+pub fn start_audio_download(
+    source: String,
+    output_dir: String,
+    state: State<'_, AppState>,
+) -> Result<DownloadJob, AppError> {
+    state.downloads.start(source, output_dir)
+}
+
+#[tauri::command]
+pub fn get_integration_status(state: State<'_, AppState>) -> Result<IntegrationStatus, AppError> {
+    state.discord.status()
 }
 
 fn app_info(app: &AppHandle) -> AppInfo {
