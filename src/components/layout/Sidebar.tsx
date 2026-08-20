@@ -15,7 +15,7 @@ export function Sidebar() {
   const setPage = useNavigationStore((state) => state.setPage);
 
   return (
-    <aside className="app-sidebar fixed bottom-[var(--player-height)] left-0 top-[var(--titlebar-height)] z-30 flex flex-col border-r border-[var(--line)] bg-black px-3 py-4">
+    <aside className="app-sidebar fixed bottom-[var(--player-height)] left-0 top-[var(--titlebar-height)] z-30 flex flex-col border-r border-[var(--line)] bg-[var(--app-bg)] px-3 py-4 transition-[width,background-color] duration-300">
       <nav className="space-y-1">
         {PRIMARY_ITEMS.map((item) => (
           <SidebarButton

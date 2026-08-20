@@ -14,7 +14,7 @@ export function TitleBar() {
   return (
     <header
       data-tauri-drag-region
-      className="fixed inset-x-0 top-0 z-50 flex h-[var(--titlebar-height)] select-none items-center border-b border-[var(--line)] bg-black"
+      className="fixed inset-x-0 top-0 z-50 flex h-[var(--titlebar-height)] select-none items-center border-b border-[var(--line)] bg-[var(--app-bg)] transition-colors duration-300"
     >
       <div data-tauri-drag-region className="flex min-w-0 flex-1 items-center px-4">
         <span className="pointer-events-none text-[9px] font-semibold tracking-[-0.015em] text-white/32">localtify</span>

@@ -2,6 +2,7 @@ import { Palette } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import {
   ACCENT_COLORS,
+  BACKGROUND_PRESETS,
   type AccentPreset,
   type DensityPreference,
   type MotionPreference,
@@ -12,14 +13,18 @@ import {
 export function AppearanceSettings() {
   const reduceMotion = useReducedMotion();
   const accent = useSettingsStore((state) => state.accent);
+  const backgroundColor = useSettingsStore((state) => state.backgroundColor);
   const motionPreference = useSettingsStore((state) => state.motion);
   const density = useSettingsStore((state) => state.density);
   const artworkGlow = useSettingsStore((state) => state.artworkGlow);
+  const playerArtworkBackdrop = useSettingsStore((state) => state.playerArtworkBackdrop);
   const playerStyle = useSettingsStore((state) => state.playerStyle);
   const setAccent = useSettingsStore((state) => state.setAccent);
+  const setBackgroundColor = useSettingsStore((state) => state.setBackgroundColor);
   const setMotion = useSettingsStore((state) => state.setMotion);
   const setDensity = useSettingsStore((state) => state.setDensity);
   const setArtworkGlow = useSettingsStore((state) => state.setArtworkGlow);
+  const setPlayerArtworkBackdrop = useSettingsStore((state) => state.setPlayerArtworkBackdrop);
   const setPlayerStyle = useSettingsStore((state) => state.setPlayerStyle);
 
   return (
@@ -29,7 +34,40 @@ export function AppearanceSettings() {
       transition={{ duration: 0.32, delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
       className="rounded-[16px] border border-[var(--line)] bg-[var(--surface-1)] p-5"
     >
-      <PanelHeader title="Appearance" description="OLED stays black. These only tune the details." />
+      <PanelHeader title="Appearance" description="Keep the layout quiet, then tune the parts that matter." />
+
+      <SettingBlock label="Background" hint="OLED black is the default. Pick a preset or any custom color.">
+        <div className="flex flex-wrap items-center gap-2">
+          {(Object.entries(BACKGROUND_PRESETS) as Array<[keyof typeof BACKGROUND_PRESETS, string]>).map(([name, color]) => (
+            <motion.button
+              key={name}
+              type="button"
+              whileHover={reduceMotion ? undefined : { y: -2 }}
+              whileTap={{ scale: 0.96 }}
+              onClick={() => setBackgroundColor(color)}
+              className={`relative h-9 w-12 rounded-[10px] border transition-colors ${
+                backgroundColor === color ? "border-white/70" : "border-white/[0.09] hover:border-white/24"
+              }`}
+              style={{ background: color }}
+              aria-label={`${name} background`}
+              title={`${name} background`}
+            >
+              {backgroundColor === color && <span className="absolute inset-x-3 bottom-1 h-0.5 rounded-full bg-white/80" />}
+            </motion.button>
+          ))}
+
+          <label className="ml-1 flex h-9 items-center gap-2 rounded-[10px] border border-[var(--line)] bg-black/25 px-2.5 text-[9px] text-white/38">
+            <input
+              type="color"
+              value={backgroundColor}
+              onChange={(event) => setBackgroundColor(event.currentTarget.value)}
+              className="size-5 cursor-pointer border-0 bg-transparent p-0"
+              aria-label="Custom background color"
+            />
+            <span className="font-mono uppercase">{backgroundColor}</span>
+          </label>
+        </div>
+      </SettingBlock>
 
       <SettingBlock label="Accent" hint="Reserved for playback and selected controls.">
         <div className="flex flex-wrap gap-2">
@@ -87,7 +125,11 @@ export function AppearanceSettings() {
         />
       </SettingBlock>
 
-      <SettingBlock label="Artwork glow" hint="Adds a restrained accent glow around featured artwork.">
+      <SettingBlock label="Player artwork backdrop" hint="Blur the current album cover behind playback and volume controls.">
+        <Toggle checked={playerArtworkBackdrop} onChange={setPlayerArtworkBackdrop} />
+      </SettingBlock>
+
+      <SettingBlock label="Ambient artwork glow" hint="Adds a restrained halo around featured and current artwork.">
         <Toggle checked={artworkGlow} onChange={setArtworkGlow} />
       </SettingBlock>
     </motion.section>
@@ -122,7 +164,7 @@ function SettingBlock({ label, hint, children }: { label: string; hint: string; 
 
 function Segmented({ value, options, onChange }: { value: string; options: Array<[string, string]>; onChange: (value: string) => void }) {
   return (
-    <div className="inline-flex rounded-[10px] border border-[var(--line)] bg-black p-1">
+    <div className="inline-flex rounded-[10px] border border-[var(--line)] bg-black/25 p-1">
       {options.map(([option, label]) => (
         <button
           key={option}

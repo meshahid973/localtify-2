@@ -22,11 +22,11 @@ export function App() {
 
   return (
     <MotionConfig reducedMotion={motionPreference === "off" ? "always" : "user"}>
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-[var(--app-bg)] text-white transition-colors duration-300">
         <TitleBar />
         <Sidebar />
 
-        <div className="app-content fixed bottom-[var(--player-height)] right-0 top-[var(--titlebar-height)] overflow-y-auto bg-black">
+        <div className="app-content fixed bottom-[var(--player-height)] right-0 top-[var(--titlebar-height)] overflow-y-auto bg-[var(--app-bg)] transition-colors duration-300">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={page}
