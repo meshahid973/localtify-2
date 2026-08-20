@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type AppPage = "home" | "library" | "downloads";
+export type AppPage = "home" | "library" | "downloads" | "settings";
 
 interface NavigationStore {
   page: AppPage;

@@ -121,6 +121,17 @@ pub fn get_download_tools(state: State<'_, AppState>) -> DownloadToolsStatus {
 }
 
 #[tauri::command]
+pub async fn install_download_tool(
+    tool: String,
+    state: State<'_, AppState>,
+) -> Result<DownloadToolsStatus, AppError> {
+    let downloads = state.downloads.clone();
+    tauri::async_runtime::spawn_blocking(move || downloads.install(&tool))
+        .await
+        .map_err(|error| AppError::download(format!("Download tool setup task failed: {error}")))?
+}
+
+#[tauri::command]
 pub fn list_downloads(state: State<'_, AppState>) -> Result<Vec<DownloadJob>, AppError> {
     state.downloads.list()
 }

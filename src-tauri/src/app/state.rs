@@ -34,6 +34,7 @@ impl AppState {
                 .map_err(|error| error.message)?,
         );
         let watcher = LibraryWatcher::new(database.clone()).map_err(|error| error.message)?;
+        let downloads = DownloadManager::new(data_dir.join("tools")).map_err(|error| error.message)?;
 
         if let Ok(folders) = database.list_folders() {
             for folder in folders {
@@ -46,7 +47,7 @@ impl AppState {
             database,
             player: PlayerManager::new(),
             watcher,
-            downloads: DownloadManager::new(),
+            downloads,
             discord: DiscordManager::new(),
         })
     }

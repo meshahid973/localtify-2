@@ -80,7 +80,7 @@ export function HomePage() {
 
         <div className="relative grid min-h-[330px] items-center gap-8 px-8 py-8 md:grid-cols-[minmax(0,1fr)_260px] md:px-10 lg:grid-cols-[minmax(0,1fr)_300px]">
           <div className="max-w-[760px]">
-            <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#1ed760]">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
               {featured ? "Now in your library" : "Private · Native · Local"}
             </p>
 
@@ -108,7 +108,7 @@ export function HomePage() {
                   whileTap={{ scale: 0.96 }}
                   transition={{ type: "spring", stiffness: 430, damping: 28 }}
                   onClick={() => void playTrack(featured.id)}
-                  className="flex h-10 items-center gap-2 rounded-full bg-[#1ed760] px-5 text-[10px] font-bold text-black"
+                  className="flex h-10 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[10px] font-bold text-black"
                 >
                   <Play className="size-3.5 fill-current" />
                   Play
@@ -118,7 +118,7 @@ export function HomePage() {
                   type="button"
                   whileTap={{ scale: 0.97 }}
                   onClick={() => void chooseFolder()}
-                  className="h-10 rounded-full bg-[#1ed760] px-5 text-[10px] font-bold text-black"
+                  className="h-10 rounded-full bg-[var(--accent)] px-5 text-[10px] font-bold text-black"
                 >
                   Add your first folder
                 </motion.button>
@@ -144,11 +144,11 @@ export function HomePage() {
             whileHover={reduceMotion ? undefined : { scale: 1.018 }}
             className="relative mx-auto hidden aspect-square w-full max-w-[300px] md:block"
           >
-            <div className="absolute inset-3 rounded-[22px] bg-[#1ed760]/[0.08] blur-2xl" />
+            <div className="absolute inset-3 rounded-[22px] bg-white/[0.035] blur-2xl" />
             <AlbumArtwork
               artworkKey={featured?.artworkKey ?? "localtify-home-hero"}
               alt={featured ? `${featured.title} artwork` : "Localtify artwork"}
-              className="relative size-full rounded-[18px] shadow-[0_28px_70px_rgba(0,0,0,.55)] ring-1 ring-inset ring-white/[0.08]"
+              className="artwork-glow-target relative size-full rounded-[18px] ring-1 ring-inset ring-white/[0.08]"
             />
           </motion.div>
         </div>
@@ -181,7 +181,7 @@ export function HomePage() {
                   <span className="block truncate text-[11px] font-semibold text-white/86">{track.title}</span>
                   <span className="mt-1 block truncate text-[9px] text-white/28">{track.artistName}</span>
                 </span>
-                <span className="ml-auto mr-3 grid size-8 shrink-0 translate-x-1 place-items-center rounded-full bg-[#1ed760] text-black opacity-0 shadow-lg transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100">
+                <span className="ml-auto mr-3 grid size-8 shrink-0 translate-x-1 place-items-center rounded-full bg-[var(--accent)] text-black opacity-0 shadow-lg transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100">
                   <Play className="ml-0.5 size-3 fill-current" />
                 </span>
               </motion.button>
@@ -213,7 +213,7 @@ export function HomePage() {
                     alt={`${track.title} artwork`}
                     className="size-full transition-transform duration-300 ease-out group-hover:scale-[1.025]"
                   />
-                  <span className="absolute bottom-3 right-3 grid size-9 translate-y-2 place-items-center rounded-full bg-[#1ed760] text-black opacity-0 shadow-xl transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+                  <span className="absolute bottom-3 right-3 grid size-9 translate-y-2 place-items-center rounded-full bg-[var(--accent)] text-black opacity-0 shadow-xl transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
                     <Play className="ml-0.5 size-3.5 fill-current" />
                   </span>
                 </div>

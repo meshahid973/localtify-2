@@ -14,15 +14,15 @@ export function TitleBar() {
   return (
     <header
       data-tauri-drag-region
-      className="fixed inset-x-0 top-0 z-50 flex h-[var(--titlebar-height)] select-none items-center border-b border-white/[0.045] bg-[#070707]"
+      className="fixed inset-x-0 top-0 z-50 flex h-[var(--titlebar-height)] select-none items-center border-b border-white/[0.04] bg-[#050505]"
     >
       <div data-tauri-drag-region className="flex min-w-0 flex-1 items-center px-3">
-        <span className="size-1.5 rounded-full bg-[#1ed760]" />
+        <span className="accent-dot size-1.5 rounded-full bg-[var(--accent)]" />
       </div>
 
       <span
         data-tauri-drag-region
-        className="pointer-events-none absolute left-1/2 -translate-x-1/2 font-mono text-[8px] font-semibold uppercase tracking-[0.3em] text-white/28"
+        className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-[8px] font-semibold uppercase tracking-[0.28em] text-white/24"
       >
         localtify
       </span>
@@ -58,8 +58,8 @@ function WindowButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className={`grid w-10 place-items-center text-white/25 transition-colors hover:text-white/75 ${
-        danger ? "hover:bg-red-600/80" : "hover:bg-white/[0.055]"
+      className={`grid w-10 place-items-center text-white/24 transition-colors hover:text-white/72 ${
+        danger ? "hover:bg-red-600/80" : "hover:bg-white/[0.05]"
       }`}
     >
       {children}

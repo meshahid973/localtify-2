@@ -3,11 +3,13 @@ import { AnimatePresence, motion } from "motion/react";
 import { ListMusic, Pause, Play, Repeat2, Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
 import { AlbumArtwork } from "../../components/ui/AlbumArtwork";
 import { useLibraryStore } from "../library/library.store";
+import { useSettingsStore } from "../settings/settings.store";
 import { usePlayerStore } from "./player.store";
 
 export function PlayerBar() {
   const tracks = useLibraryStore((state) => state.tracks);
   const player = usePlayerStore((store) => store.state);
+  const playerStyle = useSettingsStore((state) => state.playerStyle);
   const playTrack = usePlayerStore((store) => store.playTrack);
   const togglePlayback = usePlayerStore((store) => store.togglePlayback);
   const seek = usePlayerStore((store) => store.seek);
@@ -35,9 +37,11 @@ export function PlayerBar() {
     if (next) void playTrack(next.id);
   }
 
+  const floating = playerStyle === "floating";
+
   return (
-    <footer className="fixed inset-x-0 bottom-0 z-40 h-[var(--player-height)] bg-black px-2 pb-2 pt-1.5">
-      <div className="grid h-full grid-cols-[minmax(220px,1fr)_minmax(340px,1.28fr)_minmax(180px,1fr)] items-center gap-5 rounded-[14px] border border-white/[0.055] bg-[#090909] px-3.5 shadow-[0_-12px_40px_rgba(0,0,0,.28)]">
+    <footer className={`fixed inset-x-0 bottom-0 z-40 h-[var(--player-height)] bg-black ${floating ? "px-2 pb-2 pt-1.5" : "p-0"}`}>
+      <div className={`grid h-full grid-cols-[minmax(220px,1fr)_minmax(340px,1.28fr)_minmax(180px,1fr)] items-center gap-5 border border-white/[0.055] bg-[#080808] px-3.5 ${floating ? "rounded-[14px] shadow-[0_-12px_40px_rgba(0,0,0,.28)]" : "rounded-none border-x-0 border-b-0"}`}>
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.div
             key={current?.id ?? "empty"}
@@ -47,7 +51,7 @@ export function PlayerBar() {
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             className="flex min-w-0 items-center gap-3"
           >
-            <AlbumArtwork artworkKey={current?.artworkKey ?? "empty"} className="size-11 shrink-0 rounded-[8px] ring-1 ring-inset ring-white/[0.06]" />
+            <AlbumArtwork artworkKey={current?.artworkKey ?? "empty"} className="artwork-glow-target size-11 shrink-0 rounded-[8px] ring-1 ring-inset ring-white/[0.06]" />
             <div className="min-w-0">
               <p className="truncate text-[10px] font-semibold text-white/88">{current?.title ?? "Nothing playing"}</p>
               <p className="mt-1 truncate text-[8px] text-white/26">{current?.artistName ?? "Choose something from your library"}</p>
@@ -71,7 +75,7 @@ export function PlayerBar() {
               whileTap={current ? { scale: 0.93 } : undefined}
               transition={{ type: "spring", stiffness: 480, damping: 28 }}
               onClick={() => void togglePlayback()}
-              className="grid size-9 place-items-center rounded-full bg-[#1ed760] text-black shadow-[0_0_24px_rgba(30,215,96,.16)] disabled:bg-white/20 disabled:shadow-none"
+              className="accent-dot grid size-9 place-items-center rounded-full bg-[var(--accent)] text-black disabled:bg-white/20 disabled:shadow-none"
             >
               {playing ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}
             </motion.button>
@@ -80,7 +84,7 @@ export function PlayerBar() {
             </ControlButton>
             <ControlButton active={player.repeat !== "off"} label={`Repeat ${player.repeat}`} onClick={() => void cycleRepeat()}>
               <Repeat2 className="size-3.5" />
-              {player.repeat === "one" && <span className="absolute -right-1 -top-1 text-[7px] font-bold text-[#1ed760]">1</span>}
+              {player.repeat === "one" && <span className="absolute -right-1 -top-1 text-[7px] font-bold text-[var(--accent)]">1</span>}
             </ControlButton>
           </div>
 
@@ -137,7 +141,7 @@ function ControlButton({ children, label, active = false, onClick }: { children:
       whileTap={{ scale: 0.92 }}
       transition={{ type: "spring", stiffness: 500, damping: 30 }}
       onClick={onClick}
-      className={`relative transition-colors ${active ? "text-[#1ed760]" : "hover:text-white/78"}`}
+      className={`relative transition-colors ${active ? "text-[var(--accent)]" : "hover:text-white/78"}`}
     >
       {children}
     </motion.button>

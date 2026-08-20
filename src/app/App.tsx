@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Sidebar } from "../components/layout/Sidebar";
 import { TitleBar } from "../components/layout/TitleBar";
@@ -9,6 +9,8 @@ import { useLibraryStore } from "../features/library/library.store";
 import { useNavigationStore } from "../features/navigation/navigation.store";
 import { PlayerBar } from "../features/player/PlayerBar";
 import { usePlayerStore } from "../features/player/player.store";
+import { SettingsPage } from "../features/settings/SettingsPage";
+import { ACCENT_COLORS, useSettingsStore } from "../features/settings/settings.store";
 import { inspectRuntime, type RuntimeState } from "./startup";
 
 const INITIAL_RUNTIME: RuntimeState = { kind: "checking" };
@@ -21,6 +23,11 @@ export function App() {
   const refreshLibrary = useLibraryStore((state) => state.refresh);
   const hydratePlayer = usePlayerStore((state) => state.hydrate);
   const syncPlayer = usePlayerStore((state) => state.sync);
+  const accent = useSettingsStore((state) => state.accent);
+  const motionPreference = useSettingsStore((state) => state.motion);
+  const density = useSettingsStore((state) => state.density);
+  const artworkGlow = useSettingsStore((state) => state.artworkGlow);
+  const playerStyle = useSettingsStore((state) => state.playerStyle);
 
   useEffect(() => {
     let mounted = true;
@@ -31,6 +38,15 @@ export function App() {
       mounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--accent", ACCENT_COLORS[accent]);
+    root.dataset.motion = motionPreference;
+    root.dataset.density = density;
+    root.dataset.artworkGlow = artworkGlow ? "on" : "off";
+    root.dataset.playerStyle = playerStyle;
+  }, [accent, artworkGlow, density, motionPreference, playerStyle]);
 
   useEffect(() => {
     if (runtime.kind !== "ready") return;
@@ -51,29 +67,34 @@ export function App() {
     return () => window.clearInterval(timer);
   }, [runtime.kind, refreshLibrary]);
 
+  const pageDuration = motionPreference === "subtle" ? 0.18 : motionPreference === "off" ? 0.01 : 0.28;
+
   return (
-    <div className="min-h-screen bg-black text-white">
-      <TitleBar />
-      <Sidebar />
+    <MotionConfig reducedMotion={motionPreference === "off" ? "always" : "user"}>
+      <div className="min-h-screen bg-black text-white">
+        <TitleBar />
+        <Sidebar />
 
-      <div className="app-content fixed bottom-[var(--player-height)] right-0 top-[var(--titlebar-height)] overflow-y-auto bg-black">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={page}
-            initial={{ opacity: 0, x: 10, y: 3 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            exit={{ opacity: 0, x: -6, y: -2 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="min-h-full"
-          >
-            {page === "home" && <HomePage />}
-            {page === "library" && <LibraryPage />}
-            {page === "downloads" && <DownloadsPage />}
-          </motion.div>
-        </AnimatePresence>
+        <div className="app-content fixed bottom-[var(--player-height)] right-0 top-[var(--titlebar-height)] overflow-y-auto bg-black">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={page}
+              initial={{ opacity: 0, x: 8, y: 2 }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              exit={{ opacity: 0, x: -5, y: -1 }}
+              transition={{ duration: pageDuration, ease: [0.22, 1, 0.36, 1] }}
+              className="min-h-full"
+            >
+              {page === "home" && <HomePage />}
+              {page === "library" && <LibraryPage />}
+              {page === "downloads" && <DownloadsPage />}
+              {page === "settings" && <SettingsPage />}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <PlayerBar />
       </div>
-
-      <PlayerBar />
-    </div>
+    </MotionConfig>
   );
 }

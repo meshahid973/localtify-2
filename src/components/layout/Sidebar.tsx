@@ -1,4 +1,4 @@
-import { Download, Home, Library, Search, Settings } from "lucide-react";
+import { Download, Home, Library, Settings } from "lucide-react";
 import { motion } from "motion/react";
 import type { LucideIcon } from "lucide-react";
 import { useNavigationStore } from "../../features/navigation/navigation.store";
@@ -7,33 +7,16 @@ export function Sidebar() {
   const page = useNavigationStore((state) => state.page);
   const setPage = useNavigationStore((state) => state.setPage);
 
-  function openSearch() {
-    setPage("library");
-    window.setTimeout(() => {
-      document.querySelector<HTMLInputElement>("[data-library-search]")?.focus();
-    }, 100);
-  }
-
   return (
-    <aside className="app-sidebar fixed bottom-[var(--player-height)] left-0 top-[var(--titlebar-height)] z-30 flex flex-col border-r border-white/[0.05] bg-[#050505] px-3 py-4">
-      <div className="sidebar-label mb-3 px-3">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/18">Browse</p>
-      </div>
-
+    <aside className="app-sidebar fixed bottom-[var(--player-height)] left-0 top-[var(--titlebar-height)] z-30 flex flex-col border-r border-white/[0.045] bg-[#040404] px-3 py-4">
       <nav className="space-y-1">
         <SidebarButton icon={Home} label="Home" active={page === "home"} onClick={() => setPage("home")} />
-        <SidebarButton icon={Search} label="Search" active={false} onClick={openSearch} />
         <SidebarButton icon={Library} label="Library" active={page === "library"} onClick={() => setPage("library")} />
-      </nav>
-
-      <div className="sidebar-label my-4 h-px bg-white/[0.04]" />
-
-      <nav className="space-y-1">
         <SidebarButton icon={Download} label="Downloads" active={page === "downloads"} onClick={() => setPage("downloads")} />
       </nav>
 
-      <div className="mt-auto border-t border-white/[0.045] pt-3">
-        <SidebarButton icon={Settings} label="Settings" active={false} onClick={() => undefined} />
+      <div className="mt-auto border-t border-white/[0.04] pt-3">
+        <SidebarButton icon={Settings} label="Settings" active={page === "settings"} onClick={() => setPage("settings")} />
       </div>
     </aside>
   );
@@ -58,7 +41,7 @@ function SidebarButton({
       whileTap={{ scale: 0.985 }}
       transition={{ type: "spring", stiffness: 420, damping: 30 }}
       className={`sidebar-item relative flex h-10 w-full items-center gap-3 overflow-hidden rounded-[10px] px-3 text-left ${
-        active ? "text-white" : "text-white/38 hover:text-white/72"
+        active ? "text-white" : "text-white/36 hover:text-white/72"
       }`}
     >
       {active && (
@@ -74,7 +57,7 @@ function SidebarButton({
           {active && (
             <motion.span
               layoutId="sidebar-active-dot"
-              className="absolute -right-2 -top-1 size-1.5 rounded-full bg-[#1ed760] shadow-[0_0_10px_rgba(30,215,96,.55)]"
+              className="accent-dot absolute -right-2 -top-1 size-1.5 rounded-full bg-[var(--accent)]"
             />
           )}
         </span>

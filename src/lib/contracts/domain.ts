@@ -49,6 +49,9 @@ export interface DownloadJob {
 export interface DownloadToolsStatus {
   ytDlp: boolean;
   ffmpeg: boolean;
+  ytDlpManaged: boolean;
+  ytDlpPath: string | null;
+  ffmpegPath: string | null;
 }
 
 export interface IntegrationStatus {

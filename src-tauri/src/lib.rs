@@ -36,6 +36,7 @@ pub fn run() {
             commands::player_set_shuffle,
             commands::player_set_repeat,
             commands::get_download_tools,
+            commands::install_download_tool,
             commands::list_downloads,
             commands::start_audio_download,
             commands::get_integration_status,

@@ -88,6 +88,9 @@ pub struct DownloadJob {
 pub struct DownloadToolsStatus {
     pub yt_dlp: bool,
     pub ffmpeg: bool,
+    pub yt_dlp_managed: bool,
+    pub yt_dlp_path: Option<String>,
+    pub ffmpeg_path: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -1,14 +1,16 @@
 import { create } from "zustand";
 import type { DownloadJob, DownloadToolsStatus } from "../../lib/contracts/domain";
-import { downloadsApi } from "../../lib/ipc/downloads-api";
+import { downloadsApi, type DownloadToolName } from "../../lib/ipc/downloads-api";
 
 interface DownloadsStore {
   jobs: DownloadJob[];
   tools: DownloadToolsStatus | null;
   loading: boolean;
+  installing: DownloadToolName | null;
   error: string | null;
   hydrate: () => Promise<void>;
   refresh: () => Promise<void>;
+  installTool: (tool: DownloadToolName) => Promise<boolean>;
   start: (source: string, outputDir: string) => Promise<boolean>;
 }
 
@@ -16,6 +18,7 @@ export const useDownloadsStore = create<DownloadsStore>((set) => ({
   jobs: [],
   tools: null,
   loading: false,
+  installing: null,
   error: null,
 
   hydrate: async () => {
@@ -36,6 +39,20 @@ export const useDownloadsStore = create<DownloadsStore>((set) => ({
       set({ jobs, error: null });
     } catch (error) {
       set({ error: errorMessage(error) });
+    }
+  },
+
+  installTool: async (tool) => {
+    set({ installing: tool, error: null });
+    try {
+      const tools = await downloadsApi.installTool(tool);
+      set({ tools });
+      return true;
+    } catch (error) {
+      set({ error: errorMessage(error) });
+      return false;
+    } finally {
+      set({ installing: null });
     }
   },
 
