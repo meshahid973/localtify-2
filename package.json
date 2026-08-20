@@ -10,7 +10,9 @@
     "build": "npm run typecheck && tauri build",
     "build:web": "vite build",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm run build:web && cargo check --manifest-path src-tauri/Cargo.toml",
+    "check:web": "npm run typecheck && npm run build:web",
+    "check:rust": "cargo check --manifest-path src-tauri/Cargo.toml --lib",
+    "check": "npm run check:web && npm run check:rust",
     "tauri": "tauri"
   },
   "dependencies": {

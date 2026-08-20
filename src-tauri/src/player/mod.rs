@@ -38,23 +38,34 @@ impl PlayerManager {
 
     pub fn state(&self) -> Result<PlayerState, AppError> {
         let mut inner = self.lock()?;
-        if let Some(backend) = inner.backend.as_ref() {
-            inner.state.position_ms = backend
+
+        // Read the backend into plain values first so the immutable backend borrow
+        // ends before we update the mutable player state.
+        let backend_state = inner.backend.as_ref().map(|backend| {
+            let position_ms = backend
                 .player
                 .get_pos()
                 .as_millis()
                 .min(u128::from(u64::MAX)) as u64;
+            let empty = backend.player.empty();
+            let paused = backend.player.is_paused();
+            (position_ms, empty, paused)
+        });
 
-            if inner.state.current_track.is_some() && backend.player.empty() {
+        if let Some((position_ms, empty, paused)) = backend_state {
+            inner.state.position_ms = position_ms;
+
+            if inner.state.current_track.is_some() && empty {
                 inner.state.status = PlaybackStatus::Stopped;
             } else if inner.state.current_track.is_some() {
-                inner.state.status = if backend.player.is_paused() {
+                inner.state.status = if paused {
                     PlaybackStatus::Paused
                 } else {
                     PlaybackStatus::Playing
                 };
             }
         }
+
         Ok(inner.state.clone())
     }
 
