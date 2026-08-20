@@ -6,15 +6,13 @@
 
 @theme {
   --font-sans: "Space Grotesk", "Segoe UI", sans-serif;
-  --color-mint-200: #b9ffdf;
-  --color-mint-300: #7cffc9;
-  --color-mint-400: #4fe3a9;
+  --color-local-green: #1ed760;
 }
 
 :root {
   font-family: var(--font-sans);
-  color: rgba(255, 255, 255, 0.92);
-  background: #02040a;
+  color: #fff;
+  background: #000;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   color-scheme: dark;
@@ -22,15 +20,45 @@
 
 * { box-sizing: border-box; }
 html, body, #root { min-width: 320px; min-height: 100%; margin: 0; }
-body { min-height: 100vh; overflow: hidden; background: #02040a; }
+body { min-height: 100vh; overflow: hidden; background: #000; }
 button, input { font: inherit; }
 button { cursor: pointer; }
-::selection { color: #06110d; background: #7cffc9; }
+button:disabled { cursor: default; }
+::selection { color: #000; background: #1ed760; }
 ::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 999px; background: rgba(255,255,255,.12); background-clip: padding-box; }
-.volume-slider { height: 4px; appearance: none; border-radius: 999px; background: linear-gradient(90deg, #7cffc9 0 72%, rgba(255,255,255,.12) 72% 100%); outline: none; }
-.volume-slider::-webkit-slider-thumb { width: 10px; height: 10px; appearance: none; border: 0; border-radius: 999px; background: #b9ffdf; box-shadow: 0 0 12px rgba(124,255,201,.35); }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { border: 2px solid #000; border-radius: 999px; background: #2a2a2a; }
+
+.volume-slider,
+.progress-slider {
+  --progress: 0%;
+  height: 4px;
+  appearance: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #fff 0 var(--progress), #353535 var(--progress) 100%);
+  outline: none;
+}
+
+.volume-slider:hover,
+.progress-slider:hover {
+  background: linear-gradient(90deg, #1ed760 0 var(--progress), #353535 var(--progress) 100%);
+}
+
+.volume-slider::-webkit-slider-thumb,
+.progress-slider::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  opacity: 0;
+}
+
+.volume-slider:hover::-webkit-slider-thumb,
+.progress-slider:hover::-webkit-slider-thumb {
+  opacity: 1;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

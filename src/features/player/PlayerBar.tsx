@@ -1,72 +1,92 @@
 import type { ReactNode } from "react";
 import { Pause, Play, Repeat2, Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
 import { motion } from "motion/react";
-import { CoverArt } from "../../components/ui/CoverArt";
+import { AlbumArtwork } from "../../components/ui/AlbumArtwork";
+import { useLibraryStore } from "../library/library.store";
 import { usePlayerStore } from "./player.store";
 
 export function PlayerBar() {
-  const currentTrack = usePlayerStore((state) => state.currentTrack);
-  const playing = usePlayerStore((state) => state.playing);
-  const positionMs = usePlayerStore((state) => state.positionMs);
-  const volume = usePlayerStore((state) => state.volume);
-  const muted = usePlayerStore((state) => state.muted);
-  const shuffle = usePlayerStore((state) => state.shuffle);
-  const repeat = usePlayerStore((state) => state.repeat);
-  const togglePlayback = usePlayerStore((state) => state.togglePlayback);
-  const setVolume = usePlayerStore((state) => state.setVolume);
-  const toggleMute = usePlayerStore((state) => state.toggleMute);
-  const toggleShuffle = usePlayerStore((state) => state.toggleShuffle);
-  const cycleRepeat = usePlayerStore((state) => state.cycleRepeat);
+  const tracks = useLibraryStore((state) => state.tracks);
+  const player = usePlayerStore((store) => store.state);
+  const playTrack = usePlayerStore((store) => store.playTrack);
+  const togglePlayback = usePlayerStore((store) => store.togglePlayback);
+  const seek = usePlayerStore((store) => store.seek);
+  const setVolume = usePlayerStore((store) => store.setVolume);
+  const toggleMute = usePlayerStore((store) => store.toggleMute);
+  const toggleShuffle = usePlayerStore((store) => store.toggleShuffle);
+  const cycleRepeat = usePlayerStore((store) => store.cycleRepeat);
 
-  const progress = currentTrack.durationMs ? Math.min(100, (positionMs / currentTrack.durationMs) * 100) : 0;
+  const current = player.currentTrack;
+  const playing = player.status === "playing";
+  const progress = player.durationMs ? Math.min(100, (player.positionMs / player.durationMs) * 100) : 0;
+  const volumePercent = (player.muted ? 0 : player.volume) * 100;
+
+  function playAdjacent(direction: -1 | 1) {
+    if (!tracks.length) return;
+    if (player.shuffle) {
+      const random = tracks[Math.floor(Math.random() * tracks.length)];
+      if (random) void playTrack(random.id);
+      return;
+    }
+    const currentIndex = current ? tracks.findIndex((track) => track.id === current.id) : -1;
+    const base = currentIndex < 0 ? 0 : currentIndex;
+    const nextIndex = (base + direction + tracks.length) % tracks.length;
+    const next = tracks[nextIndex];
+    if (next) void playTrack(next.id);
+  }
 
   return (
-    <footer className="fixed inset-x-0 bottom-0 z-40 h-24 border-t border-white/[0.08] bg-[#10161a]/90 shadow-[0_-20px_60px_rgba(0,0,0,.35)] backdrop-blur-2xl">
-      <div className="grid h-full grid-cols-[minmax(190px,1fr)_minmax(300px,1.35fr)_minmax(180px,1fr)] items-center gap-4 px-3 md:px-5">
+    <footer className="fixed inset-x-0 bottom-0 z-40 h-[88px] border-t border-[#171717] bg-black">
+      <div className="grid h-full grid-cols-[minmax(190px,1fr)_minmax(320px,1.3fr)_minmax(170px,1fr)] items-center gap-5 px-4">
         <div className="flex min-w-0 items-center gap-3">
-          <CoverArt artworkKey={currentTrack.artworkKey} animated={false} className="size-12 shrink-0 rounded-xl border border-white/10" />
+          <AlbumArtwork artworkKey={current?.artworkKey ?? "empty"} className="size-12 shrink-0 rounded-md" />
           <div className="min-w-0">
-            <motion.p key={currentTrack.id} initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} className="truncate text-[11px] font-bold text-white">
-              {currentTrack.title}
-            </motion.p>
-            <p className="truncate text-[9px] font-medium text-white/40">{currentTrack.artistName}</p>
+            <p className="truncate text-[13px] font-medium">{current?.title ?? "Nothing playing"}</p>
+            <p className="mt-0.5 truncate text-[11px] text-[#777]">{current?.artistName ?? "Choose a song from your library"}</p>
           </div>
         </div>
 
         <div className="flex min-w-0 flex-col items-center">
-          <div className="flex items-center gap-4 text-white/50">
-            <ControlButton active={shuffle} label="Shuffle" onClick={toggleShuffle}><Shuffle className="size-3.5" /></ControlButton>
-            <ControlButton label="Previous"><SkipBack className="size-4" /></ControlButton>
+          <div className="flex items-center gap-5 text-[#8a8a8a]">
+            <ControlButton active={player.shuffle} label="Shuffle" onClick={() => void toggleShuffle()}><Shuffle className="size-4" /></ControlButton>
+            <ControlButton label="Previous" onClick={() => playAdjacent(-1)}><SkipBack className="size-[18px] fill-current" /></ControlButton>
             <motion.button
               type="button"
               aria-label={playing ? "Pause" : "Play"}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.9 }}
-              transition={{ type: "spring", stiffness: 500, damping: 24 }}
-              onClick={togglePlayback}
-              className="grid size-10 place-items-center rounded-full bg-mint-300 text-[#07110d] shadow-[0_0_30px_rgba(120,255,204,.28)]"
+              disabled={!current}
+              whileHover={current ? { scale: 1.06 } : undefined}
+              whileTap={current ? { scale: 0.94 } : undefined}
+              onClick={() => void togglePlayback()}
+              className="grid size-9 place-items-center rounded-full bg-white text-black disabled:opacity-35"
             >
               {playing ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}
             </motion.button>
-            <ControlButton label="Next"><SkipForward className="size-4" /></ControlButton>
-            <ControlButton active={repeat !== "off"} label={`Repeat ${repeat}`} onClick={cycleRepeat}>
-              <Repeat2 className="size-3.5" />
-              {repeat === "one" && <span className="absolute -right-1 -top-1 text-[7px] font-bold text-mint-300">1</span>}
+            <ControlButton label="Next" onClick={() => playAdjacent(1)}><SkipForward className="size-[18px] fill-current" /></ControlButton>
+            <ControlButton active={player.repeat !== "off"} label={`Repeat ${player.repeat}`} onClick={() => void cycleRepeat()}>
+              <Repeat2 className="size-4" />
+              {player.repeat === "one" && <span className="absolute -right-1 -top-1 text-[8px] font-bold text-[#1ed760]">1</span>}
             </ControlButton>
           </div>
 
-          <div className="mt-2 flex w-full max-w-[560px] items-center gap-2 text-[7px] font-semibold tabular-nums text-white/32">
-            <span>0:00</span>
-            <div className="relative h-1 flex-1 overflow-hidden rounded-full bg-white/10">
-              <motion.div className="absolute inset-y-0 left-0 rounded-full bg-white/45" animate={{ width: `${progress}%` }} transition={{ type: "spring", stiffness: 160, damping: 24 }} />
-            </div>
-            <span>{formatDuration(currentTrack.durationMs)}</span>
+          <div className="mt-2 flex w-full max-w-[610px] items-center gap-2 text-[9px] tabular-nums text-[#666]">
+            <span className="w-9 text-right">{formatDuration(player.positionMs)}</span>
+            <input
+              aria-label="Playback position"
+              type="range"
+              min="0"
+              max={Math.max(1, player.durationMs)}
+              value={Math.min(player.positionMs, Math.max(1, player.durationMs))}
+              onChange={(event) => void seek(Number(event.currentTarget.value))}
+              style={{ "--progress": `${progress}%` } as React.CSSProperties}
+              className="progress-slider flex-1"
+            />
+            <span className="w-9">{formatDuration(player.durationMs)}</span>
           </div>
         </div>
 
         <div className="ml-auto flex w-full max-w-[190px] items-center justify-end gap-2">
-          <button type="button" aria-label={muted ? "Unmute" : "Mute"} onClick={toggleMute} className="text-white/55 transition-colors hover:text-white">
-            {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+          <button type="button" aria-label={player.muted ? "Unmute" : "Mute"} onClick={() => void toggleMute()} className="text-[#888] transition-colors hover:text-white">
+            {player.muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
           </button>
           <input
             aria-label="Volume"
@@ -74,8 +94,9 @@ export function PlayerBar() {
             min="0"
             max="1"
             step="0.01"
-            value={muted ? 0 : volume}
-            onChange={(event) => setVolume(Number(event.currentTarget.value))}
+            value={player.muted ? 0 : player.volume}
+            onChange={(event) => void setVolume(Number(event.currentTarget.value))}
+            style={{ "--progress": `${volumePercent}%` } as React.CSSProperties}
             className="volume-slider w-full"
           />
         </div>
@@ -90,10 +111,10 @@ function ControlButton({ children, label, active = false, onClick }: { children:
       type="button"
       aria-label={label}
       title={label}
-      whileHover={{ scale: 1.13 }}
-      whileTap={{ scale: 0.88 }}
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.92 }}
       onClick={onClick}
-      className={`relative transition-colors ${active ? "text-mint-300" : "hover:text-white"}`}
+      className={`relative transition-colors ${active ? "text-[#1ed760]" : "hover:text-white"}`}
     >
       {children}
     </motion.button>
@@ -101,7 +122,7 @@ function ControlButton({ children, label, active = false, onClick }: { children:
 }
 
 function formatDuration(durationMs: number) {
-  const seconds = Math.round(durationMs / 1000);
-  const minutes = Math.floor(seconds / 60);
-  return `${minutes}:${String(seconds % 60).padStart(2, "0")}`;
+  const totalSeconds = Math.floor(durationMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  return `${minutes}:${String(totalSeconds % 60).padStart(2, "0")}`;
 }
