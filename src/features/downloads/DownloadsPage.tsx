@@ -36,41 +36,41 @@ export function DownloadsPage() {
   const ready = Boolean(tools?.ytDlp && tools?.ffmpeg);
 
   return (
-    <main className="mx-auto w-full max-w-[1220px] px-6 pb-14 pt-7 lg:px-10">
+    <main className="mx-auto w-full max-w-[1220px] px-7 pb-14 pt-6 lg:px-10">
       <header>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/28">Power tools</p>
-        <h1 className="mt-1 text-[34px] font-semibold tracking-[-0.055em]">Downloads</h1>
-        <p className="mt-2 max-w-2xl text-[11px] leading-5 text-white/32">
-          Save audio from media you have permission to download. Localtify uses yt-dlp and FFmpeg on your machine and imports nothing into the cloud.
+        <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/22">Power tools</p>
+        <h1 className="mt-1 font-mono text-[30px] font-semibold tracking-[-0.055em] text-[#f3f0dd]">Downloads</h1>
+        <p className="mt-2 max-w-2xl font-mono text-[9px] leading-5 text-white/25">
+          Save audio from media you have permission to download. Processing stays on this device.
         </p>
       </header>
 
-      <section className="mt-7 rounded-2xl border border-white/[0.06] bg-[#090909] p-5">
-        <div className="flex flex-wrap items-center gap-2 text-[10px]">
+      <section className="mt-6 rounded-[12px] border border-white/[0.05] bg-[#0b0b0b] p-5">
+        <div className="flex flex-wrap items-center gap-2 font-mono text-[8px]">
           <ToolBadge label="yt-dlp" ready={Boolean(tools?.ytDlp)} />
           <ToolBadge label="ffmpeg" ready={Boolean(tools?.ffmpeg)} />
-          <span className="ml-auto text-white/25">{ready ? "ready" : "install tools and restart Localtify"}</span>
+          <span className="ml-auto text-white/20">{ready ? "ready" : "install tools and restart Localtify"}</span>
         </div>
 
         <div className="mt-5 grid gap-3">
           <label>
-            <span className="mb-2 block text-[10px] font-medium text-white/38">Media URL</span>
+            <span className="mb-2 block font-mono text-[9px] text-white/30">Media URL</span>
             <input
               value={source}
               onChange={(event) => setSource(event.currentTarget.value)}
               placeholder="https://..."
-              className="h-11 w-full rounded-xl border border-white/[0.07] bg-black px-4 text-[12px] text-white outline-none transition-colors placeholder:text-white/20 focus:border-white/[0.16]"
+              className="h-10 w-full rounded-[9px] border border-white/[0.055] bg-black px-3.5 font-mono text-[10px] text-[#dedac8] outline-none transition-colors placeholder:text-white/15 focus:border-white/[0.13]"
             />
           </label>
 
           <div>
-            <span className="mb-2 block text-[10px] font-medium text-white/38">Output folder</span>
+            <span className="mb-2 block font-mono text-[9px] text-white/30">Output folder</span>
             <button
               type="button"
               onClick={() => void chooseOutput()}
-              className="flex h-11 w-full items-center gap-3 rounded-xl border border-white/[0.07] bg-black px-4 text-left text-[11px] text-white/45 transition-colors hover:border-white/[0.14] hover:text-white/70"
+              className="flex h-10 w-full items-center gap-3 rounded-[9px] border border-white/[0.055] bg-black px-3.5 text-left font-mono text-[9px] text-white/28 transition-colors hover:border-white/[0.11] hover:text-white/55"
             >
-              <Folder className="size-4 shrink-0" />
+              <Folder className="size-3.5 shrink-0" />
               <span className="truncate">{outputDir || "Choose a folder"}</span>
             </button>
           </div>
@@ -79,25 +79,25 @@ export function DownloadsPage() {
             type="button"
             disabled={!ready || loading || !source.trim() || !outputDir}
             onClick={() => void submit()}
-            className="mt-1 flex h-11 items-center justify-center gap-2 rounded-xl bg-[#f5f5ef] text-[11px] font-bold text-black transition-transform active:scale-[.99] disabled:opacity-30"
+            className="mt-1 flex h-10 items-center justify-center gap-2 rounded-[9px] bg-[#f3f0dd] font-mono text-[9px] font-bold text-[#151515] transition-transform active:scale-[.99] disabled:opacity-25"
           >
-            <Download className="size-4" />
+            <Download className="size-3.5" />
             Convert to MP3
           </button>
         </div>
 
-        {error && <p className="mt-3 text-[11px] text-red-300">{error}</p>}
+        {error && <p className="mt-3 font-mono text-[9px] text-red-300/80">{error}</p>}
       </section>
 
-      <section className="performance-section mt-9">
+      <section className="performance-section mt-8">
         <div className="mb-4 flex items-end gap-3">
-          <h2 className="text-[24px] font-semibold tracking-[-0.045em]">Queue</h2>
-          <span className="pb-1 text-[10px] text-white/28">{jobs.length} jobs</span>
+          <h2 className="font-mono text-[24px] font-semibold tracking-[-0.045em] text-[#f3f0dd]">Queue</h2>
+          <span className="pb-1 font-mono text-[8px] uppercase tracking-[0.08em] text-white/20">{jobs.length} jobs</span>
         </div>
 
         <div className="space-y-2">
           {jobs.length ? jobs.map((job) => <DownloadRow key={job.id} job={job} />) : (
-            <div className="rounded-xl border border-dashed border-white/[0.08] py-12 text-center text-[11px] text-white/25">
+            <div className="rounded-[11px] border border-dashed border-white/[0.07] py-12 text-center font-mono text-[9px] text-white/20">
               No downloads yet
             </div>
           )}
@@ -110,7 +110,7 @@ export function DownloadsPage() {
 function ToolBadge({ label, ready }: { label: string; ready: boolean }) {
   return (
     <span className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 ${
-      ready ? "border-[#1ed760]/20 bg-[#1ed760]/[0.07] text-[#8de7ad]" : "border-white/[0.07] text-white/30"
+      ready ? "border-[#1ed760]/18 bg-[#1ed760]/[0.055] text-[#82da9e]" : "border-white/[0.055] text-white/25"
     }`}>
       {ready ? <Check className="size-3" /> : <TriangleAlert className="size-3" />}
       {label}
@@ -121,16 +121,22 @@ function ToolBadge({ label, ready }: { label: string; ready: boolean }) {
 function DownloadRow({ job }: { job: import("../../lib/contracts/domain").DownloadJob }) {
   const running = job.status === "queued" || job.status === "downloading";
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-white/[0.055] bg-[#090909] px-4 py-3">
-      <span className={`grid size-8 place-items-center rounded-full ${running ? "bg-white/[0.06] text-white/55" : job.status === "completed" ? "bg-[#1ed760]/10 text-[#72e49a]" : "bg-red-500/10 text-red-300"}`}>
+    <div className="flex items-center gap-3 rounded-[10px] border border-white/[0.045] bg-[#0b0b0b] px-4 py-3">
+      <span className={`grid size-8 place-items-center rounded-full ${
+        running
+          ? "bg-white/[0.045] text-white/45"
+          : job.status === "completed"
+            ? "bg-[#1ed760]/[0.07] text-[#79d795]"
+            : "bg-red-500/[0.07] text-red-300/80"
+      }`}>
         {running ? <LoaderCircle className="size-4 animate-spin" /> : job.status === "completed" ? <Check className="size-4" /> : <TriangleAlert className="size-4" />}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[11px] font-medium text-white/75">{job.source}</p>
-        <p className="mt-1 truncate text-[9px] text-white/25">{job.outputDir}</p>
-        {job.error && <p className="mt-1 truncate text-[9px] text-red-300">{job.error}</p>}
+        <p className="truncate font-mono text-[9px] font-medium text-[#dcd8c6]">{job.source}</p>
+        <p className="mt-1 truncate font-mono text-[8px] text-white/20">{job.outputDir}</p>
+        {job.error && <p className="mt-1 truncate font-mono text-[8px] text-red-300/75">{job.error}</p>}
       </div>
-      <span className="text-[9px] font-semibold uppercase tracking-[0.08em] text-white/30">{job.status}</span>
+      <span className="font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-white/22">{job.status}</span>
     </div>
   );
 }

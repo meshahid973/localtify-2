@@ -1,44 +1,50 @@
-import { Download, Home, Library, Settings } from "lucide-react";
+import { Download, Home, Library, Search, Settings } from "lucide-react";
 import { motion } from "motion/react";
 import type { LucideIcon } from "lucide-react";
-import { useNavigationStore, type AppPage } from "../../features/navigation/navigation.store";
-
-const items: Array<{ icon: LucideIcon; label: string; page: AppPage }> = [
-  { icon: Home, label: "Home", page: "home" },
-  { icon: Library, label: "Library", page: "library" },
-  { icon: Download, label: "Downloads", page: "downloads" },
-];
+import { useNavigationStore } from "../../features/navigation/navigation.store";
 
 export function Sidebar() {
   const page = useNavigationStore((state) => state.page);
   const setPage = useNavigationStore((state) => state.setPage);
 
+  function openSearch() {
+    setPage("library");
+    window.setTimeout(() => {
+      document.querySelector<HTMLInputElement>("[data-library-search]")?.focus();
+    }, 90);
+  }
+
   return (
-    <aside className="app-sidebar fixed bottom-[86px] left-0 top-8 z-30 flex flex-col border-r border-white/[0.06] bg-[#050505] px-3 py-4">
-      <div className="sidebar-mode mb-5 rounded-xl bg-white/[0.035] p-1">
-        <div className="rounded-lg bg-white/[0.07] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/80">
-          Local
-        </div>
-      </div>
-
-      <nav className="space-y-1.5">
-        {items.map((item) => (
-          <SidebarButton
-            key={item.page}
-            {...item}
-            active={item.page === page}
-            onClick={() => setPage(item.page)}
-          />
-        ))}
-      </nav>
-
-      <div className="mt-auto border-t border-white/[0.06] pt-3">
+    <aside className="app-sidebar fixed bottom-[var(--player-height)] left-0 top-[var(--titlebar-height)] z-30 flex flex-col border-r border-white/[0.055] bg-[#070707] px-3 py-3.5">
+      <div className="sidebar-mode mb-4 grid grid-cols-2 rounded-[10px] border border-white/[0.055] bg-[#0c0c0c] p-1 font-mono text-[9px] font-semibold uppercase tracking-[0.08em]">
+        <span className="rounded-[7px] bg-[#1a1a19] px-2 py-2 text-center text-[#f0edd9]">Local</span>
         <button
           type="button"
-          className="sidebar-item flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[#777] transition-colors hover:bg-white/[0.045] hover:text-white"
+          disabled
+          title="Server mode is not enabled yet"
+          className="rounded-[7px] px-2 py-2 text-white/20"
         >
-          <Settings className="size-[18px] shrink-0" strokeWidth={1.8} />
-          <span className="sidebar-label text-[12px] font-medium">Settings</span>
+          Server
+        </button>
+      </div>
+
+      <nav className="space-y-1">
+        <SidebarButton icon={Home} label="Home" active={page === "home"} onClick={() => setPage("home")} />
+        <SidebarButton icon={Search} label="Search" active={false} onClick={openSearch} />
+        <SidebarButton icon={Library} label="Library" active={page === "library"} onClick={() => setPage("library")} />
+
+        <div className="sidebar-label my-3 h-px bg-white/[0.045]" />
+
+        <SidebarButton icon={Download} label="Downloads" active={page === "downloads"} onClick={() => setPage("downloads")} />
+      </nav>
+
+      <div className="mt-auto border-t border-white/[0.05] pt-3">
+        <button
+          type="button"
+          className="sidebar-item flex h-10 w-full items-center gap-3 rounded-[9px] px-3 text-left text-white/32 transition-colors hover:bg-white/[0.04] hover:text-white/70"
+        >
+          <Settings className="size-[17px] shrink-0" strokeWidth={1.8} />
+          <span className="sidebar-label font-mono text-[11px]">Settings</span>
         </button>
       </div>
     </aside>
@@ -53,7 +59,6 @@ function SidebarButton({
 }: {
   icon: LucideIcon;
   label: string;
-  page: AppPage;
   active: boolean;
   onClick: () => void;
 }) {
@@ -61,20 +66,22 @@ function SidebarButton({
     <motion.button
       type="button"
       onClick={onClick}
+      whileHover={{ x: 1 }}
       whileTap={{ scale: 0.985 }}
-      className={`sidebar-item relative flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left transition-colors ${
-        active ? "bg-white/[0.09] text-white" : "text-[#777] hover:bg-white/[0.045] hover:text-white"
+      transition={{ type: "spring", stiffness: 460, damping: 34 }}
+      className={`sidebar-item relative flex h-10 w-full items-center gap-3 rounded-[9px] px-3 text-left transition-colors ${
+        active ? "bg-[#1a1a19] text-[#f3f0dd]" : "text-white/34 hover:bg-white/[0.04] hover:text-white/70"
       }`}
     >
       {active && (
         <motion.span
           layoutId="sidebar-active"
-          className="absolute -left-3 h-5 w-[2px] rounded-full bg-[#1ed760]"
-          transition={{ type: "spring", stiffness: 420, damping: 34 }}
+          className="absolute -left-3 h-5 w-[2px] rounded-full bg-[#f3f0dd]"
+          transition={{ type: "spring", stiffness: 430, damping: 34 }}
         />
       )}
-      <Icon className="size-[18px] shrink-0" strokeWidth={active ? 2 : 1.8} />
-      <span className="sidebar-label text-[12px] font-medium">{label}</span>
+      <Icon className="size-[17px] shrink-0" strokeWidth={active ? 2 : 1.75} />
+      <span className="sidebar-label font-mono text-[11px]">{label}</span>
     </motion.button>
   );
 }
