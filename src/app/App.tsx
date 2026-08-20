@@ -7,6 +7,7 @@ import { useNavigationStore } from "../features/navigation/navigation.store";
 import { PlayerBar } from "../features/player/PlayerBar";
 import { useSettingsStore } from "../features/settings/settings.store";
 import { EASE_OUT } from "../lib/motion";
+import { ThemeBackground } from "../themes/ThemeBackground";
 import { useAppearance } from "./useAppearance";
 import { useRuntimeSync } from "./useRuntimeSync";
 
@@ -20,21 +21,22 @@ export function App() {
 
   const page = useNavigationStore((state) => state.page);
   const motionPreference = useSettingsStore((state) => state.motion);
-  const pageDuration = motionPreference === "subtle" ? 0.16 : motionPreference === "off" ? 0.01 : 0.24;
+  const pageDuration = motionPreference === "calm" ? 0.16 : motionPreference === "off" ? 0.01 : motionPreference === "osu" ? 0.28 : 0.24;
 
   return (
     <MotionConfig reducedMotion={motionPreference === "off" ? "always" : "user"}>
-      <div className="min-h-screen bg-[var(--app-bg)] text-white transition-colors duration-300">
+      <div className="app-theme relative min-h-screen text-white">
+        <ThemeBackground />
         <TitleBar />
         <Sidebar />
 
-        <div className="app-content fixed bottom-[var(--player-height)] right-0 top-[var(--titlebar-height)] overflow-y-auto bg-[var(--app-bg)] transition-colors duration-300">
+        <div className="app-content themed-content fixed bottom-[var(--player-height)] right-0 top-[var(--titlebar-height)] z-10 overflow-y-auto bg-[var(--app-bg)] transition-colors duration-300">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={page}
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -3 }}
+              initial={{ opacity: 0, y: motionPreference === "osu" ? 8 : 5, scale: motionPreference === "osu" ? 0.997 : 1 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -3, scale: motionPreference === "osu" ? 0.998 : 1 }}
               transition={{ duration: pageDuration, ease: EASE_OUT }}
               className="min-h-full"
             >

@@ -2,6 +2,7 @@ import { Check, Download, Gauge, Wrench } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect } from "react";
+import { Pressable } from "../../../ui/motion/Pressable";
 import { useDownloadsStore } from "../../downloads/downloads.store";
 
 export function DownloadToolsSettings() {
@@ -21,15 +22,15 @@ export function DownloadToolsSettings() {
       initial={reduceMotion ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.32, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-      className="rounded-[16px] border border-[var(--line)] bg-[var(--surface-1)] p-5"
+      className="themed-panel rounded-[16px] border border-[var(--line)] bg-[var(--surface-1)] p-5"
     >
       <div className="flex items-start gap-3">
-        <span className="grid size-9 shrink-0 place-items-center rounded-[9px] bg-white/[0.04] text-white/50">
+        <span className="grid size-9 shrink-0 place-items-center rounded-[9px] bg-white/[0.05] text-white/55">
           <Wrench className="size-4" />
         </span>
         <div>
           <h2 className="text-[17px] font-semibold tracking-[-0.03em]">Download tools</h2>
-          <p className="mt-1 text-[10px] leading-4 text-white/27">One-time setup for audio downloads and MP3 conversion.</p>
+          <p className="mt-1 text-[10px] leading-4 text-white/30">One-time setup for audio downloads and MP3 conversion.</p>
         </div>
       </div>
 
@@ -57,7 +58,7 @@ export function DownloadToolsSettings() {
         />
       </div>
 
-      <p className="mt-5 rounded-[10px] border border-[var(--line)] bg-black px-4 py-3 text-[9px] leading-5 text-white/25">
+      <p className="themed-card mt-5 rounded-[10px] border border-[var(--line)] bg-black/30 px-4 py-3 text-[9px] leading-5 text-white/28">
         yt-dlp is stored inside Localtify's app-data folder. On Windows, FFmpeg setup uses Windows Package Manager.
       </p>
 
@@ -90,26 +91,25 @@ function ToolRow({
   onInstall: () => void;
 }) {
   return (
-    <div className="rounded-[11px] border border-[var(--line)] bg-black p-4">
+    <div className="themed-card rounded-[11px] border border-[var(--line)] bg-black/30 p-4">
       <div className="flex items-center gap-3">
-        <span className={`grid size-8 place-items-center rounded-[8px] ${ready ? "bg-white/[0.055] text-white/70" : "bg-white/[0.035] text-white/25"}`}>
+        <span className={`grid size-8 place-items-center rounded-[8px] ${ready ? "bg-white/[0.06] text-white/74" : "bg-white/[0.04] text-white/28"}`}>
           {ready ? <Check className="size-4" /> : <Icon className="size-4" />}
         </span>
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold text-white/76">{name}</p>
-          <p className="mt-0.5 text-[9px] text-white/25">{description}</p>
+          <p className="text-[11px] font-semibold text-white/80">{name}</p>
+          <p className="mt-0.5 text-[9px] text-white/28">{description}</p>
         </div>
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.96 }}
+        <Pressable
+          strength="subtle"
           disabled={busy || (ready && buttonLabel === "Ready")}
           onClick={onInstall}
-          className="ml-auto rounded-full border border-[var(--line)] px-3 py-2 text-[9px] text-white/44 transition-colors hover:bg-white/[0.035] hover:text-white/72 disabled:opacity-35"
+          className="themed-button ml-auto rounded-full border border-[var(--line)] px-3 py-2 text-[9px] text-white/48 disabled:opacity-35"
         >
-          {busy ? "Setting up…" : buttonLabel}
-        </motion.button>
+          <span className="relative z-10">{busy ? "Setting up…" : buttonLabel}</span>
+        </Pressable>
       </div>
-      {path && <p className="mt-3 truncate text-[8px] text-white/15">{path}</p>}
+      {path && <p className="mt-3 truncate text-[8px] text-white/18">{path}</p>}
     </div>
   );
 }

@@ -1,6 +1,8 @@
+import type { ReactNode } from "react";
 import { isTauri } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Minus, Square, X } from "lucide-react";
+import { Pressable } from "../../ui/motion/Pressable";
 
 async function perform(action: "minimize" | "maximize" | "close") {
   if (!isTauri()) return;
@@ -14,10 +16,10 @@ export function TitleBar() {
   return (
     <header
       data-tauri-drag-region
-      className="fixed inset-x-0 top-0 z-50 flex h-[var(--titlebar-height)] select-none items-center border-b border-[var(--line)] bg-[var(--app-bg)] transition-colors duration-300"
+      className="themed-titlebar fixed inset-x-0 top-0 z-50 flex h-[var(--titlebar-height)] select-none items-center border-b border-[var(--line)] bg-[var(--ui-sidebar-bg)] transition-colors duration-300"
     >
       <div data-tauri-drag-region className="flex min-w-0 flex-1 items-center px-4">
-        <span className="pointer-events-none text-[9px] font-semibold tracking-[-0.015em] text-white/32">localtify</span>
+        <span className="pointer-events-none text-[9px] font-semibold tracking-[-0.015em] text-white/38">localtify</span>
       </div>
 
       <div className="flex h-full">
@@ -41,21 +43,22 @@ function WindowButton({
   danger = false,
   onClick,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   label: string;
   danger?: boolean;
   onClick: () => void;
 }) {
   return (
-    <button
-      type="button"
-      aria-label={label}
+    <Pressable
+      ariaLabel={label}
       onClick={onClick}
-      className={`grid w-10 place-items-center text-white/22 transition-colors hover:text-white/70 ${
-        danger ? "hover:bg-red-600/80" : "hover:bg-white/[0.045]"
+      strength="subtle"
+      flash={false}
+      className={`grid h-full w-10 place-items-center text-white/28 transition-colors hover:text-white/75 ${
+        danger ? "hover:bg-red-600/80" : "hover:bg-white/[0.05]"
       }`}
     >
       {children}
-    </button>
+    </Pressable>
   );
 }

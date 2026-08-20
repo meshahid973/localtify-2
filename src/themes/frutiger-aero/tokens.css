@@ -1,0 +1,39 @@
+:root[data-theme="aero"] {
+  --ui-canvas: #6dc8f0;
+  --ui-background: transparent;
+  --ui-surface: rgba(18, 90, 128, 0.46);
+  --ui-surface-raised: rgba(20, 112, 154, 0.56);
+  --ui-border: rgba(255, 255, 255, 0.34);
+  --ui-text: #ffffff;
+  --ui-text-muted: rgba(255, 255, 255, 0.68);
+  --ui-accent: var(--custom-accent, #35e68a);
+  --ui-shadow: rgba(0, 52, 82, 0.28);
+  --ui-highlight: rgba(255, 255, 255, 0.26);
+  --ui-button-surface: rgba(255, 255, 255, 0.16);
+  --ui-card-surface: rgba(16, 95, 132, 0.48);
+  --ui-sidebar-bg: rgba(8, 65, 92, 0.52);
+  --ui-content-bg: rgba(2, 31, 49, 0.12);
+  --ui-player-bg: rgba(7, 64, 91, 0.64);
+  color-scheme: dark;
+}
+
+:root[data-theme="aero"][data-aero-env="sky"] {
+  --aero-top: #4fbef6;
+  --aero-mid: #8de0ff;
+  --aero-bottom: #9ae77b;
+  --aero-water: #2aa5df;
+}
+
+:root[data-theme="aero"][data-aero-env="ocean"] {
+  --aero-top: #1f97dd;
+  --aero-mid: #62d8f6;
+  --aero-bottom: #2ab5b3;
+  --aero-water: #0877b8;
+}
+
+:root[data-theme="aero"][data-aero-env="meadow"] {
+  --aero-top: #75c8f7;
+  --aero-mid: #c2f0ff;
+  --aero-bottom: #78d54f;
+  --aero-water: #47bce8;
+}

@@ -5,6 +5,7 @@ import { albumArtworkFor } from "../../ALBUM";
 import { AlbumArtwork } from "../../components/ui/AlbumArtwork";
 import { formatDuration } from "../../lib/format";
 import { MOTION } from "../../lib/motion";
+import { Pressable } from "../../ui/motion/Pressable";
 import { useLibraryStore } from "../library/library.store";
 import { useSettingsStore } from "../settings/settings.store";
 import { usePlaybackClock } from "./usePlaybackClock";
@@ -54,15 +55,15 @@ export function PlayerBar() {
 
   return (
     <footer className={`fixed inset-x-0 bottom-0 z-40 h-[var(--player-height)] bg-[var(--app-bg)] ${floating ? "px-2 pb-2 pt-1.5" : "p-0"}`}>
-      <div className={`player-shell relative grid h-full items-center overflow-hidden border border-[var(--line)] bg-[var(--surface-1)] px-3.5 ${floating ? "rounded-[13px] shadow-[0_-10px_36px_rgba(0,0,0,.25)]" : "rounded-none border-x-0 border-b-0"}`}>
+      <div className={`player-shell themed-player relative grid h-full items-center overflow-hidden border border-[var(--line)] bg-[var(--ui-player-bg)] px-3.5 ${floating ? "rounded-[13px] shadow-[0_-10px_36px_rgba(0,0,0,.25)]" : "rounded-none border-x-0 border-b-0"}`}>
         <AnimatePresence initial={false} mode="wait">
           {playerArtworkBackdrop && currentArtwork && current && (
             <motion.div
               key={current.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.28 }}
+              initial={{ opacity: 0, scale: 1.015 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.01 }}
+              transition={{ duration: 0.32, ease: MOTION.enter.ease }}
               className="pointer-events-none absolute inset-0 overflow-hidden"
               aria-hidden
             >
@@ -87,31 +88,30 @@ export function PlayerBar() {
             </div>
             <div className="min-w-0">
               <p className="truncate text-[10px] font-semibold text-white/88">{current?.title ?? "Nothing playing"}</p>
-              <p className="mt-1 truncate text-[8px] text-white/28">{current?.artistName ?? "Choose something from your library"}</p>
+              <p className="mt-1 truncate text-[8px] text-white/30">{current?.artistName ?? "Choose something from your library"}</p>
             </div>
           </motion.div>
         </AnimatePresence>
 
         <div className="player-controls relative z-10 flex min-w-0 flex-col items-center">
-          <div className="flex items-center gap-4 text-white/32">
+          <div className="flex items-center gap-4 text-white/34">
             <ControlButton active={shuffle} label="Shuffle" onClick={() => void toggleShuffle()}>
               <Shuffle className="size-3.5" />
             </ControlButton>
             <ControlButton label="Previous" onClick={() => playAdjacent(-1)}>
               <SkipBack className="size-4 fill-current" />
             </ControlButton>
-            <motion.button
-              type="button"
-              aria-label={playing ? "Pause" : "Play"}
+            <Pressable
+              ariaLabel={playing ? "Pause" : "Play"}
               disabled={!current}
-              whileHover={current ? { scale: 1.055 } : undefined}
-              whileTap={current ? { scale: 0.94 } : undefined}
-              transition={MOTION.spring}
+              strength="strong"
               onClick={() => void togglePlayback()}
               className="grid size-9 place-items-center rounded-full bg-[var(--accent)] text-black shadow-[0_6px_22px_rgba(0,0,0,.24)] disabled:bg-white/18"
             >
-              {playing ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}
-            </motion.button>
+              <span className="relative z-10">
+                {playing ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}
+              </span>
+            </Pressable>
             <ControlButton label="Next" onClick={() => playAdjacent(1)}>
               <SkipForward className="size-4 fill-current" />
             </ControlButton>
@@ -121,7 +121,7 @@ export function PlayerBar() {
             </ControlButton>
           </div>
 
-          <div className="mt-2 flex w-full max-w-[560px] items-center gap-2 text-[7px] tabular-nums text-white/20">
+          <div className="mt-2 flex w-full max-w-[560px] items-center gap-2 text-[7px] tabular-nums text-white/22">
             <span className="w-9 text-right">{formatDuration(visualPositionMs)}</span>
             <input
               aria-label="Playback position"
@@ -138,14 +138,15 @@ export function PlayerBar() {
         </div>
 
         <div className="player-volume relative z-10 ml-auto flex w-full max-w-[170px] items-center justify-end gap-2">
-          <button
-            type="button"
-            aria-label={muted ? "Unmute" : "Mute"}
+          <Pressable
+            ariaLabel={muted ? "Unmute" : "Mute"}
+            strength="subtle"
+            flash={false}
             onClick={() => void toggleMute()}
-            className="text-white/30 transition-colors hover:text-white/72"
+            className="text-white/34 transition-colors hover:text-white/76"
           >
-            {muted ? <VolumeX className="size-3.5" /> : <Volume2 className="size-3.5" />}
-          </button>
+            <span className="relative z-10">{muted ? <VolumeX className="size-3.5" /> : <Volume2 className="size-3.5" />}</span>
+          </Pressable>
           <input
             aria-label="Volume"
             type="range"
@@ -165,17 +166,14 @@ export function PlayerBar() {
 
 function ControlButton({ children, label, active = false, onClick }: { children: ReactNode; label: string; active?: boolean; onClick?: () => void }) {
   return (
-    <motion.button
-      type="button"
-      aria-label={label}
+    <Pressable
+      ariaLabel={label}
       title={label}
-      whileHover={{ scale: 1.07, y: -1 }}
-      whileTap={{ scale: 0.93 }}
-      transition={MOTION.spring}
+      strength="medium"
       onClick={onClick}
-      className={`relative transition-colors ${active ? "text-[var(--accent)]" : "hover:text-white/78"}`}
+      className={`relative transition-colors ${active ? "text-[var(--accent)]" : "hover:text-white/80"}`}
     >
-      {children}
-    </motion.button>
+      <span className="relative z-10">{children}</span>
+    </Pressable>
   );
 }

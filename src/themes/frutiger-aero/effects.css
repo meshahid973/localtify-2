@@ -1,0 +1,79 @@
+.aero-background {
+  display: none;
+}
+
+:root[data-theme="aero"] .aero-background {
+  display: block;
+}
+
+.aero-world {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255,255,255,.9) 0 3%, rgba(255,255,255,.34) 8%, transparent 22%),
+    radial-gradient(ellipse at 78% 18%, rgba(255,255,255,.52), transparent 22%),
+    linear-gradient(180deg, var(--aero-top, #4fbef6) 0%, var(--aero-mid, #8de0ff) 47%, var(--aero-water, #2aa5df) 67%, var(--aero-bottom, #9ae77b) 100%);
+  filter: saturate(var(--aero-saturation, 120%));
+}
+
+.aero-world::before,
+.aero-world::after {
+  content: "";
+  position: absolute;
+  inset: -8%;
+  pointer-events: none;
+}
+
+.aero-world::before {
+  background:
+    radial-gradient(ellipse at 15% 77%, rgba(119,221,82,.82) 0 13%, transparent 14%),
+    radial-gradient(ellipse at 85% 82%, rgba(89,201,69,.72) 0 15%, transparent 16%),
+    radial-gradient(ellipse at 52% 70%, rgba(255,255,255,.18), transparent 34%);
+  transform: translate3d(0,0,0);
+}
+
+:root[data-aero-motion="on"] .aero-world::before {
+  animation: aero-drift 18s ease-in-out infinite alternate;
+}
+
+.aero-world::after {
+  background: linear-gradient(180deg, rgba(255,255,255,.08), transparent 38%, rgba(0,70,112,.10));
+}
+
+.aero-bubble {
+  position: absolute;
+  left: var(--bubble-x);
+  bottom: -80px;
+  width: var(--bubble-size);
+  height: var(--bubble-size);
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.58);
+  background: radial-gradient(circle at 32% 27%, rgba(255,255,255,.78), rgba(255,255,255,.12) 34%, rgba(63,179,230,.10) 62%, rgba(255,255,255,.28));
+  box-shadow: inset -5px -7px 12px rgba(40,140,190,.10), 0 4px 18px rgba(0,104,160,.09);
+  opacity: var(--bubble-opacity);
+  transform: translate3d(0,0,0);
+  animation: aero-bubble-rise var(--bubble-duration) linear var(--bubble-delay) infinite;
+}
+
+:root[data-aero-bubbles="off"] .aero-bubble {
+  display: none;
+}
+
+@keyframes aero-bubble-rise {
+  0% { transform: translate3d(0, 0, 0) scale(.9); }
+  45% { transform: translate3d(15px, -45vh, 0) scale(1); }
+  100% { transform: translate3d(-10px, -105vh, 0) scale(1.04); }
+}
+
+@keyframes aero-drift {
+  from { transform: translate3d(-1.5%, 0, 0) scale(1.01); }
+  to { transform: translate3d(1.5%, -1%, 0) scale(1.035); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aero-bubble,
+  .aero-world::before { animation: none !important; }
+}
+
+:root[data-motion="off"] .aero-bubble,
+:root[data-motion="off"] .aero-world::before {
+  animation: none !important;
+}

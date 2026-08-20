@@ -6,6 +6,8 @@ import { albumArtworkFor } from "../../ALBUM";
 import { AlbumArtwork } from "../../components/ui/AlbumArtwork";
 import { PageFrame, PageHeader, SectionHeading } from "../../components/ui/Page";
 import { MOTION } from "../../lib/motion";
+import { HoverSurface } from "../../ui/motion/HoverSurface";
+import { Pressable } from "../../ui/motion/Pressable";
 import { useLibraryStore } from "../library/library.store";
 import { useNavigationStore } from "../navigation/navigation.store";
 import { usePlayerStore } from "../player/player.store";
@@ -44,18 +46,15 @@ export function HomePage() {
         title="Listen locally."
         meta={`${tracks.length} tracks · ${folders.length} folders`}
         actions={
-          <motion.button
-            type="button"
-            whileHover={reduceMotion ? undefined : { y: -2, scale: 1.015 }}
-            whileTap={{ scale: 0.97 }}
-            transition={MOTION.spring}
+          <Pressable
+            strength="medium"
             onClick={() => void chooseFolder()}
             disabled={scanning}
-            className="flex h-9 items-center gap-2 rounded-full bg-white px-4 text-[10px] font-semibold text-black shadow-[0_8px_28px_rgba(0,0,0,.22)] disabled:opacity-40"
+            className="themed-button flex h-9 items-center gap-2 rounded-full bg-white px-4 text-[10px] font-semibold text-black shadow-[0_8px_28px_rgba(0,0,0,.22)] disabled:opacity-40"
           >
-            <FolderPlus className="size-3.5" />
-            {scanning ? "Scanning…" : "Add music"}
-          </motion.button>
+            <FolderPlus className="relative z-10 size-3.5" />
+            <span className="relative z-10">{scanning ? "Scanning…" : "Add music"}</span>
+          </Pressable>
         }
       />
 
@@ -63,7 +62,7 @@ export function HomePage() {
         initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.996 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ ...MOTION.section, delay: 0.04 }}
-        className="home-hero relative mt-6 overflow-hidden rounded-[18px] border border-[var(--line)] bg-[var(--surface-1)] shadow-[0_18px_70px_rgba(0,0,0,.20)]"
+        className="home-hero themed-panel relative mt-6 overflow-hidden rounded-[18px] border border-[var(--line)] bg-[var(--surface-1)] shadow-[0_18px_70px_rgba(0,0,0,.20)]"
       >
         <HeroArtworkBackdrop source={currentArtwork} enabled={heroArtworkBackdrop} />
 
@@ -77,7 +76,7 @@ export function HomePage() {
               transition={{ duration: 0.34, ease: MOTION.enter.ease }}
               className="hero-copy max-w-[760px]"
             >
-              <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/40">
+              <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/42">
                 {currentTrack ? "Now playing" : featured ? "From your library" : "On this device"}
               </p>
 
@@ -85,63 +84,62 @@ export function HomePage() {
                 {featured?.title ?? "Your music. Nothing else."}
               </h2>
 
-              <p className="mt-5 max-w-xl text-[11px] leading-5 text-white/52">
+              <p className="mt-5 max-w-xl text-[11px] leading-5 text-white/55">
                 {featured
                   ? `${featured.artistName}${featured.albumTitle ? ` · ${featured.albumTitle}` : ""}`
                   : "A native local player that stays quiet until you need it."}
               </p>
 
               <div className="mt-7 flex items-center gap-3">
-                <motion.button
-                  type="button"
-                  whileHover={reduceMotion ? undefined : { scale: 1.035, y: -1 }}
-                  whileTap={{ scale: 0.96 }}
-                  transition={MOTION.spring}
+                <Pressable
+                  strength="strong"
                   onClick={() => featured ? void playTrack(featured.id) : void chooseFolder()}
-                  className="flex h-10 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[10px] font-bold text-black shadow-[0_10px_32px_rgba(0,0,0,.30)]"
+                  className="themed-button flex h-10 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[10px] font-bold text-black shadow-[0_10px_32px_rgba(0,0,0,.30)]"
                 >
-                  {featured ? <Play className="size-3.5 fill-current" /> : <FolderPlus className="size-3.5" />}
-                  {featured ? "Play" : "Add music"}
-                </motion.button>
+                  <span className="relative z-10 flex items-center gap-2">
+                    {featured ? <Play className="size-3.5 fill-current" /> : <FolderPlus className="size-3.5" />}
+                    {featured ? "Play" : "Add music"}
+                  </span>
+                </Pressable>
 
-                <motion.button
-                  type="button"
-                  whileHover={reduceMotion ? undefined : { y: -2 }}
-                  whileTap={{ scale: 0.97 }}
-                  transition={MOTION.spring}
+                <Pressable
+                  strength="medium"
                   onClick={() => setPage("library")}
-                  className="flex h-10 items-center gap-2 rounded-full border border-white/[0.08] bg-black/25 px-4 text-[10px] font-medium text-white/58 backdrop-blur-sm transition-colors hover:bg-white/[0.055] hover:text-white/88"
+                  className="themed-button flex h-10 items-center gap-2 rounded-full border border-white/[0.08] bg-black/25 px-4 text-[10px] font-medium text-white/62"
                 >
-                  <Library className="size-3.5" />
-                  Library
-                </motion.button>
+                  <span className="relative z-10 flex items-center gap-2">
+                    <Library className="size-3.5" />
+                    Library
+                  </span>
+                </Pressable>
               </div>
             </motion.div>
           </AnimatePresence>
 
-          <motion.div
-            key={featured?.artworkKey ?? "empty-art"}
-            initial={reduceMotion ? false : { opacity: 0, x: 18, y: 4, scale: 0.94, rotate: 0.8 }}
-            animate={{ opacity: 1, x: 0, y: 0, scale: 1, rotate: 0 }}
-            transition={{ ...MOTION.softSpring, delay: 0.06 }}
-            whileHover={reduceMotion ? undefined : { y: -5, scale: 1.015, rotate: -0.35 }}
-            className="home-hero-art relative mx-auto hidden aspect-square w-full md:block"
-          >
-            {heroArtwork && (
-              <img
-                src={heroArtwork}
-                alt=""
-                aria-hidden
-                className="image-ambience-aura absolute inset-2 size-[calc(100%-16px)] rounded-[18px] object-cover"
+          <HoverSurface strength="medium" className="home-hero-art relative mx-auto hidden aspect-square w-full md:block">
+            <motion.div
+              key={featured?.artworkKey ?? "empty-art"}
+              initial={reduceMotion ? false : { opacity: 0, x: 18, y: 4, scale: 0.94, rotate: 0.8 }}
+              animate={{ opacity: 1, x: 0, y: 0, scale: 1, rotate: 0 }}
+              transition={{ ...MOTION.softSpring, delay: 0.06 }}
+              className="relative size-full"
+            >
+              {heroArtwork && (
+                <img
+                  src={heroArtwork}
+                  alt=""
+                  aria-hidden
+                  className="image-ambience-aura absolute inset-2 size-[calc(100%-16px)] rounded-[18px] object-cover"
+                />
+              )}
+              <AlbumArtwork
+                artworkKey={featured?.artworkKey ?? "localtify-home-hero"}
+                alt={featured ? `${featured.title} artwork` : "Localtify artwork"}
+                eager
+                className="relative z-10 size-full rounded-[16px] ring-1 ring-inset ring-white/[0.10] shadow-[0_18px_50px_rgba(0,0,0,.30)]"
               />
-            )}
-            <AlbumArtwork
-              artworkKey={featured?.artworkKey ?? "localtify-home-hero"}
-              alt={featured ? `${featured.title} artwork` : "Localtify artwork"}
-              eager
-              className="relative z-10 size-full rounded-[16px] ring-1 ring-inset ring-white/[0.10] shadow-[0_18px_50px_rgba(0,0,0,.30)]"
-            />
-          </motion.div>
+            </motion.div>
+          </HoverSurface>
         </div>
       </motion.section>
 
@@ -156,26 +154,27 @@ export function HomePage() {
         {quickPicks.length ? (
           <div className="quick-picks-grid grid gap-2.5">
             {quickPicks.map((track, index) => (
-              <motion.button
+              <motion.div
                 key={track.id}
-                type="button"
                 initial={reduceMotion ? false : { opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.26, delay: Math.min(index * 0.035, 0.16), ease: MOTION.enter.ease }}
-                whileHover={reduceMotion ? undefined : { y: -3, scale: 1.003 }}
-                whileTap={{ scale: 0.992 }}
-                onClick={() => void playTrack(track.id)}
-                className="quick-pick-card group flex h-[62px] min-w-0 items-center overflow-hidden rounded-[11px] border border-[var(--line)] bg-[var(--surface-1)] text-left transition-colors hover:border-white/[0.10] hover:bg-[var(--surface-2)]"
               >
-                <AlbumArtwork artworkKey={track.artworkKey} alt={`${track.title} artwork`} className="size-[62px] shrink-0 transition-transform duration-300 ease-out group-hover:scale-[1.035]" />
-                <span className="min-w-0 px-3">
-                  <span className="block truncate text-[11px] font-semibold text-white/86">{track.title}</span>
-                  <span className="mt-1 block truncate text-[9px] text-white/28">{track.artistName}</span>
-                </span>
-                <span className="ml-auto mr-3 grid size-8 shrink-0 translate-y-1 place-items-center rounded-full bg-white text-black opacity-0 shadow-xl transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
-                  <Play className="ml-0.5 size-3 fill-current" />
-                </span>
-              </motion.button>
+                <Pressable
+                  strength="medium"
+                  onClick={() => void playTrack(track.id)}
+                  className="quick-pick-card themed-card group flex h-[62px] w-full min-w-0 items-center rounded-[11px] border border-[var(--line)] bg-[var(--surface-1)] text-left transition-colors hover:border-white/[0.12] hover:bg-[var(--surface-2)]"
+                >
+                  <AlbumArtwork artworkKey={track.artworkKey} alt={`${track.title} artwork`} className="relative z-10 size-[62px] shrink-0 transition-transform duration-300 ease-out group-hover:scale-[1.035]" />
+                  <span className="relative z-10 min-w-0 px-3">
+                    <span className="block truncate text-[11px] font-semibold text-white/88">{track.title}</span>
+                    <span className="mt-1 block truncate text-[9px] text-white/30">{track.artistName}</span>
+                  </span>
+                  <span className="relative z-10 ml-auto mr-3 grid size-8 shrink-0 translate-y-1 place-items-center rounded-full bg-white text-black opacity-0 shadow-xl transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+                    <Play className="ml-0.5 size-3 fill-current" />
+                  </span>
+                </Pressable>
+              </motion.div>
             ))}
           </div>
         ) : (
@@ -188,30 +187,33 @@ export function HomePage() {
           <SectionHeading title="Recently added" meta={`${recentTracks.length} covers`} />
           <div className="recent-covers-grid grid gap-4">
             {recentTracks.map((track, index) => (
-              <motion.button
+              <motion.div
                 key={track.id}
-                type="button"
                 initial={reduceMotion ? false : { opacity: 0, y: 10, scale: 0.985 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.28, delay: Math.min(index * 0.035, 0.18), ease: MOTION.enter.ease }}
-                whileHover={reduceMotion ? undefined : { y: -5, scale: 1.006 }}
-                whileTap={{ scale: 0.985 }}
-                onClick={() => void playTrack(track.id)}
-                className="recent-cover-card group min-w-0 text-left"
               >
-                <div className="relative aspect-square overflow-hidden rounded-[13px] bg-[var(--surface-1)] ring-1 ring-inset ring-white/[0.055]">
-                  <AlbumArtwork
-                    artworkKey={track.artworkKey}
-                    alt={`${track.title} artwork`}
-                    className="size-full transition-transform duration-300 ease-out group-hover:scale-[1.035]"
-                  />
-                  <span className="absolute bottom-3 right-3 grid size-9 translate-y-2 place-items-center rounded-full bg-white text-black opacity-0 shadow-xl transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
-                    <Play className="ml-0.5 size-3.5 fill-current" />
-                  </span>
-                </div>
-                <p className="mt-3 truncate text-[11px] font-semibold text-white/82">{track.title}</p>
-                <p className="mt-1 truncate text-[9px] text-white/26">{track.artistName}</p>
-              </motion.button>
+                <Pressable
+                  strength="medium"
+                  flash={false}
+                  highlight={false}
+                  onClick={() => void playTrack(track.id)}
+                  className="recent-cover-card group block w-full min-w-0 text-left"
+                >
+                  <div className="themed-card relative aspect-square overflow-hidden rounded-[13px] bg-[var(--surface-1)] ring-1 ring-inset ring-white/[0.055]">
+                    <AlbumArtwork
+                      artworkKey={track.artworkKey}
+                      alt={`${track.title} artwork`}
+                      className="size-full transition-transform duration-300 ease-out group-hover:scale-[1.04]"
+                    />
+                    <span className="absolute bottom-3 right-3 grid size-9 translate-y-2 place-items-center rounded-full bg-white text-black opacity-0 shadow-xl transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+                      <Play className="ml-0.5 size-3.5 fill-current" />
+                    </span>
+                  </div>
+                  <p className="relative z-10 mt-3 truncate text-[11px] font-semibold text-white/84">{track.title}</p>
+                  <p className="relative z-10 mt-1 truncate text-[9px] text-white/28">{track.artistName}</p>
+                </Pressable>
+              </motion.div>
             ))}
           </div>
         </section>
@@ -222,15 +224,13 @@ export function HomePage() {
 
 function EmptyState({ onClick }: { onClick: () => void }) {
   return (
-    <motion.button
-      type="button"
-      whileHover={{ scale: 1.003 }}
-      whileTap={{ scale: 0.997 }}
+    <Pressable
+      strength="subtle"
       onClick={onClick}
-      className="flex min-h-28 w-full items-center justify-center rounded-[11px] border border-dashed border-white/[0.07] bg-[var(--surface-1)] text-[10px] text-white/26 transition-colors hover:border-white/[0.12] hover:text-white/52"
+      className="themed-card flex min-h-28 w-full items-center justify-center rounded-[11px] border border-dashed border-white/[0.07] bg-[var(--surface-1)] text-[10px] text-white/28 transition-colors hover:border-white/[0.12] hover:text-white/55"
     >
-      Add music to build your home
-    </motion.button>
+      <span className="relative z-10">Add music to build your home</span>
+    </Pressable>
   );
 }
 

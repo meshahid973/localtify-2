@@ -1,0 +1,51 @@
+:root[data-theme="aero"] .themed-panel,
+:root[data-theme="aero"] .themed-card,
+:root[data-theme="aero"] .themed-player,
+:root[data-theme="aero"] .home-hero {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.04) 43%, rgba(20,120,158,.14) 44%, rgba(6,67,97,.34)),
+    var(--ui-surface);
+  border-color: rgba(255,255,255,.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.30),
+    inset 0 -1px 0 rgba(0,66,102,.22),
+    0 14px 34px rgba(0,63,95,.16);
+  backdrop-filter: blur(var(--aero-glass-blur, 10px)) saturate(var(--aero-saturation, 120%));
+}
+
+:root[data-theme="aero"][data-aero-glass="light"] {
+  --aero-glass-blur: 6px;
+}
+
+:root[data-theme="aero"][data-aero-glass="balanced"] {
+  --aero-glass-blur: 10px;
+}
+
+:root[data-theme="aero"][data-aero-glass="glossy"] {
+  --aero-glass-blur: 14px;
+}
+
+:root[data-theme="aero"] .themed-button,
+:root[data-theme="aero"] .pressable.themed-button {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.34), rgba(255,255,255,.09) 48%, rgba(0,113,161,.16) 49%, rgba(0,70,105,.24)),
+    rgba(30, 140, 181, .36);
+  border: 1px solid rgba(255,255,255,.34);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.34), 0 5px 16px rgba(0,65,100,.14);
+}
+
+:root[data-theme="aero"] .themed-sidebar,
+:root[data-theme="aero"] .themed-titlebar {
+  background: var(--ui-sidebar-bg);
+  backdrop-filter: blur(12px) saturate(var(--aero-saturation, 120%));
+  border-color: rgba(255,255,255,.25);
+}
+
+:root[data-theme="aero"] .themed-content {
+  background: var(--ui-content-bg);
+}
+
+.aero-gloss {
+  background: linear-gradient(180deg, rgba(255,255,255,.36), rgba(255,255,255,.08) 48%, transparent 49%);
+  mix-blend-mode: screen;
+}

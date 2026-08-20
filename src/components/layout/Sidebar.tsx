@@ -1,8 +1,10 @@
 import { Download, Home, Library, Settings } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion } from "motion/react";
-import { MOTION } from "../../lib/motion";
 import { type AppPage, useNavigationStore } from "../../features/navigation/navigation.store";
+import { MOTION } from "../../lib/motion";
+import { AnimatedIcon } from "../../ui/motion/AnimatedIcon";
+import { Pressable } from "../../ui/motion/Pressable";
 
 const PRIMARY_ITEMS: Array<{ page: AppPage; label: string; icon: LucideIcon }> = [
   { page: "home", label: "Home", icon: Home },
@@ -15,7 +17,7 @@ export function Sidebar() {
   const setPage = useNavigationStore((state) => state.setPage);
 
   return (
-    <aside className="app-sidebar fixed bottom-[var(--player-height)] left-0 top-[var(--titlebar-height)] z-30 flex flex-col border-r border-[var(--line)] bg-[var(--app-bg)] px-3 py-4 transition-[width,background-color] duration-300">
+    <aside className="app-sidebar themed-sidebar fixed bottom-[var(--player-height)] left-0 top-[var(--titlebar-height)] z-30 flex flex-col border-r border-[var(--line)] bg-[var(--ui-sidebar-bg)] px-3 py-4 transition-[width,background-color] duration-300">
       <nav className="space-y-1">
         {PRIMARY_ITEMS.map((item) => (
           <SidebarButton
@@ -47,27 +49,27 @@ function SidebarButton({
   onClick: () => void;
 }) {
   return (
-    <motion.button
-      type="button"
+    <Pressable
       onClick={onClick}
-      whileHover={{ x: 1 }}
-      whileTap={{ scale: 0.985 }}
-      transition={MOTION.spring}
-      className={`sidebar-item relative flex h-10 w-full items-center gap-3 overflow-hidden rounded-[10px] px-3 text-left transition-colors ${
-        active ? "text-white" : "text-white/36 hover:text-white/72"
+      strength="subtle"
+      flash={false}
+      className={`sidebar-item relative flex h-10 w-full items-center gap-3 rounded-[10px] px-3 text-left transition-colors ${
+        active ? "text-white" : "text-white/40 hover:text-white/78"
       }`}
     >
       {active && (
         <motion.span
           layoutId="sidebar-active"
-          className="absolute inset-0 rounded-[10px] border border-white/[0.055] bg-white/[0.05]"
+          className="absolute inset-0 z-0 rounded-[10px] border border-white/[0.08] bg-white/[0.055]"
           transition={MOTION.spring}
         />
       )}
       <span className="relative z-10 flex items-center gap-3">
-        <Icon className="size-[17px] shrink-0" strokeWidth={active ? 2 : 1.75} />
+        <AnimatedIcon active={active}>
+          <Icon className="size-[17px] shrink-0" strokeWidth={active ? 2 : 1.75} />
+        </AnimatedIcon>
         <span className="sidebar-label text-[11px] font-medium tracking-[-0.01em]">{label}</span>
       </span>
-    </motion.button>
+    </Pressable>
   );
 }

@@ -3,6 +3,10 @@
 @import "@fontsource/space-grotesk/500.css";
 @import "@fontsource/space-grotesk/600.css";
 @import "@fontsource/space-grotesk/700.css";
+@import "../themes/oled/tokens.css";
+@import "../themes/frutiger-aero/tokens.css";
+@import "../themes/frutiger-aero/materials.css";
+@import "../themes/frutiger-aero/effects.css";
 
 @theme {
   --font-sans: "Space Grotesk", "Segoe UI", sans-serif;
@@ -10,26 +14,30 @@
 }
 
 :root {
-  --accent: #1ed760;
-  --app-bg: #000000;
-  --surface-1: color-mix(in srgb, var(--app-bg) 94%, white);
-  --surface-2: color-mix(in srgb, var(--app-bg) 90%, white);
-  --line: rgba(255, 255, 255, 0.055);
+  --custom-accent: #1ed760;
+  --custom-background: #000000;
+  --accent: var(--ui-accent, var(--custom-accent));
+  --app-bg: var(--ui-background, var(--custom-background));
+  --surface-1: var(--ui-surface, color-mix(in srgb, var(--custom-background) 94%, white));
+  --surface-2: var(--ui-surface-raised, color-mix(in srgb, var(--custom-background) 90%, white));
+  --line: var(--ui-border, rgba(255, 255, 255, 0.055));
   --sidebar-width: 176px;
   --player-height: 84px;
   --titlebar-height: 30px;
   --hero-backdrop-opacity: 0.42;
   --hero-bloom-opacity: 0.22;
-  --hero-backdrop-blur: 10px;
-  --hero-backdrop-brightness: 114%;
+  --hero-user-blur: 12px;
+  --hero-user-brightness: 118%;
+  --hero-backdrop-blur: var(--hero-user-blur);
+  --hero-backdrop-brightness: var(--hero-user-brightness);
   --hero-bloom-blur: 30px;
   --ambience-aura-opacity: 0.28;
   --ambience-blur: 18px;
   --player-backdrop-opacity: 0.26;
   --player-ambience-blur: 15px;
   font-family: var(--font-sans);
-  color: #fff;
-  background: var(--app-bg);
+  color: var(--ui-text, #fff);
+  background: var(--ui-canvas, #000);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   color-scheme: dark;
@@ -65,7 +73,7 @@ html, body, #root { min-width: 320px; min-height: 100%; margin: 0; }
 body {
   min-height: 100vh;
   overflow: hidden;
-  background: var(--app-bg);
+  background: var(--ui-canvas, #000);
   transition: background-color 300ms ease;
 }
 button, input { font: inherit; }
@@ -78,6 +86,25 @@ img { user-select: none; -webkit-user-drag: none; }
   outline: 1px solid color-mix(in srgb, var(--accent) 52%, transparent);
   outline-offset: 2px;
 }
+
+.pressable {
+  transform-origin: center;
+  will-change: transform;
+}
+.interaction-hover-layer {
+  opacity: 0;
+  background:
+    radial-gradient(circle at 50% -20%, rgba(255,255,255,.17), transparent 55%),
+    rgba(255,255,255,.025);
+  mix-blend-mode: screen;
+  transition: opacity 420ms cubic-bezier(.22,1,.36,1);
+}
+.pressable:hover .interaction-hover-layer { opacity: 1; }
+.interaction-flash {
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.78), rgba(255,255,255,.18) 45%, transparent 72%);
+  mix-blend-mode: screen;
+}
+:root[data-motion="off"] .interaction-hover-layer { transition: none; }
 
 .app-sidebar { width: var(--sidebar-width); }
 .app-content {
@@ -128,11 +155,17 @@ img { user-select: none; -webkit-user-drag: none; }
 }
 .hero-backdrop-scrim {
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--app-bg) 96%, transparent) 0%, color-mix(in srgb, var(--app-bg) 84%, transparent) 42%, color-mix(in srgb, var(--app-bg) 55%, transparent) 66%, color-mix(in srgb, var(--app-bg) 22%, transparent) 100%),
-    linear-gradient(180deg, color-mix(in srgb, var(--app-bg) 10%, transparent), color-mix(in srgb, var(--app-bg) 58%, transparent));
+    linear-gradient(90deg, color-mix(in srgb, var(--custom-background) 96%, transparent) 0%, color-mix(in srgb, var(--custom-background) 84%, transparent) 42%, color-mix(in srgb, var(--custom-background) 55%, transparent) 66%, color-mix(in srgb, var(--custom-background) 22%, transparent) 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--custom-background) 10%, transparent), color-mix(in srgb, var(--custom-background) 58%, transparent));
+}
+:root[data-theme="aero"] .hero-backdrop-scrim {
+  background:
+    linear-gradient(90deg, rgba(2,28,43,.94) 0%, rgba(4,46,66,.82) 40%, rgba(8,72,96,.46) 68%, rgba(20,112,146,.14) 100%),
+    linear-gradient(180deg, rgba(0,20,33,.08), rgba(0,27,42,.46));
 }
 
-:root[data-motion="full"] .hero-backdrop-image {
+:root[data-motion="localtify"] .hero-backdrop-image,
+:root[data-motion="osu"] .hero-backdrop-image {
   animation: hero-drift 18s ease-in-out infinite alternate;
 }
 @keyframes hero-drift {
@@ -173,8 +206,13 @@ img { user-select: none; -webkit-user-drag: none; }
 }
 .player-artwork-vignette {
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--app-bg) 80%, transparent), color-mix(in srgb, var(--app-bg) 48%, transparent) 52%, color-mix(in srgb, var(--app-bg) 77%, transparent)),
+    linear-gradient(90deg, color-mix(in srgb, var(--custom-background) 80%, transparent), color-mix(in srgb, var(--custom-background) 48%, transparent) 52%, color-mix(in srgb, var(--custom-background) 77%, transparent)),
     linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.30));
+}
+:root[data-theme="aero"] .player-artwork-vignette {
+  background:
+    linear-gradient(90deg, rgba(3,41,61,.76), rgba(3,59,82,.35) 52%, rgba(3,43,62,.72)),
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,26,40,.30));
 }
 
 :root[data-motion="off"] .app-content { scroll-behavior: auto; }
@@ -189,13 +227,13 @@ img { user-select: none; -webkit-user-drag: none; }
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 
 ::-webkit-scrollbar { width: 7px; }
-::-webkit-scrollbar-track { background: var(--app-bg); }
+::-webkit-scrollbar-track { background: var(--ui-canvas, #000); }
 ::-webkit-scrollbar-thumb {
-  border: 2px solid var(--app-bg);
+  border: 2px solid var(--ui-canvas, #000);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--app-bg) 70%, white);
+  background: color-mix(in srgb, var(--ui-canvas, #000) 70%, white);
 }
-::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--app-bg) 62%, white); }
+::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--ui-canvas, #000) 62%, white); }
 
 .volume-slider,
 .progress-slider,
@@ -209,7 +247,7 @@ img { user-select: none; -webkit-user-drag: none; }
 }
 .settings-range {
   height: 4px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 74%, white) 0 100%, rgba(255,255,255,.12) 100% 100%);
+  background: rgba(255,255,255,.12);
 }
 .volume-slider:hover,
 .progress-slider:hover {
@@ -241,6 +279,12 @@ img { user-select: none; -webkit-user-drag: none; }
 .volume-slider:active::-webkit-slider-thumb,
 .progress-slider:active::-webkit-slider-thumb,
 .settings-range:active::-webkit-slider-thumb { transform: scale(1.15); }
+
+.aero-theme-preview {
+  background:
+    radial-gradient(circle at 22% 22%, rgba(255,255,255,.86), transparent 20%),
+    linear-gradient(180deg, #64c9f6 0 54%, #2aaae0 55% 70%, #8ade67 71%);
+}
 
 @media (max-width: 1380px) {
   :root { --sidebar-width: 154px; }

@@ -1,0 +1,18 @@
+:root,
+:root[data-theme="oled"] {
+  --ui-canvas: var(--custom-background, #000000);
+  --ui-background: var(--custom-background, #000000);
+  --ui-surface: color-mix(in srgb, var(--custom-background, #000000) 94%, white);
+  --ui-surface-raised: color-mix(in srgb, var(--custom-background, #000000) 90%, white);
+  --ui-border: rgba(255, 255, 255, 0.055);
+  --ui-text: #ffffff;
+  --ui-text-muted: rgba(255, 255, 255, 0.42);
+  --ui-accent: var(--custom-accent, #1ed760);
+  --ui-shadow: rgba(0, 0, 0, 0.42);
+  --ui-highlight: rgba(255, 255, 255, 0.08);
+  --ui-button-surface: rgba(255, 255, 255, 0.04);
+  --ui-card-surface: var(--ui-surface);
+  --ui-sidebar-bg: var(--ui-background);
+  --ui-content-bg: var(--ui-background);
+  --ui-player-bg: var(--ui-surface);
+}
