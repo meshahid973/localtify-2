@@ -28,6 +28,8 @@ interface SettingsStore {
   density: DensityPreference;
   artworkGlow: boolean;
   heroArtworkBackdrop: boolean;
+  heroBackdropBlur: number;
+  heroBackdropBrightness: number;
   playerArtworkBackdrop: boolean;
   ambienceStrength: AmbienceStrength;
   playerStyle: PlayerStyle;
@@ -37,6 +39,8 @@ interface SettingsStore {
   setDensity: (density: DensityPreference) => void;
   setArtworkGlow: (enabled: boolean) => void;
   setHeroArtworkBackdrop: (enabled: boolean) => void;
+  setHeroBackdropBlur: (blur: number) => void;
+  setHeroBackdropBrightness: (brightness: number) => void;
   setPlayerArtworkBackdrop: (enabled: boolean) => void;
   setAmbienceStrength: (strength: AmbienceStrength) => void;
   setPlayerStyle: (style: PlayerStyle) => void;
@@ -50,6 +54,8 @@ const DEFAULTS = {
   density: "comfortable" as DensityPreference,
   artworkGlow: true,
   heroArtworkBackdrop: true,
+  heroBackdropBlur: 10,
+  heroBackdropBrightness: 114,
   playerArtworkBackdrop: true,
   ambienceStrength: "balanced" as AmbienceStrength,
   playerStyle: "floating" as PlayerStyle,
@@ -57,6 +63,10 @@ const DEFAULTS = {
 
 function validHexColor(value: string) {
   return /^#[0-9a-f]{6}$/i.test(value.trim());
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
 }
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -72,6 +82,8 @@ export const useSettingsStore = create<SettingsStore>()(
       setDensity: (density) => set({ density }),
       setArtworkGlow: (artworkGlow) => set({ artworkGlow }),
       setHeroArtworkBackdrop: (heroArtworkBackdrop) => set({ heroArtworkBackdrop }),
+      setHeroBackdropBlur: (heroBackdropBlur) => set({ heroBackdropBlur: clamp(heroBackdropBlur, 0, 24) }),
+      setHeroBackdropBrightness: (heroBackdropBrightness) => set({ heroBackdropBrightness: clamp(heroBackdropBrightness, 80, 135) }),
       setPlayerArtworkBackdrop: (playerArtworkBackdrop) => set({ playerArtworkBackdrop }),
       setAmbienceStrength: (ambienceStrength) => set({ ambienceStrength }),
       setPlayerStyle: (playerStyle) => set({ playerStyle }),

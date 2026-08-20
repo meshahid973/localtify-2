@@ -8,16 +8,20 @@ export function useAppearance() {
   const density = useSettingsStore((state) => state.density);
   const artworkGlow = useSettingsStore((state) => state.artworkGlow);
   const ambienceStrength = useSettingsStore((state) => state.ambienceStrength);
+  const heroBackdropBlur = useSettingsStore((state) => state.heroBackdropBlur);
+  const heroBackdropBrightness = useSettingsStore((state) => state.heroBackdropBrightness);
   const playerStyle = useSettingsStore((state) => state.playerStyle);
 
   useEffect(() => {
     const root = document.documentElement;
     root.style.setProperty("--accent", ACCENT_COLORS[accent]);
     root.style.setProperty("--app-bg", backgroundColor);
+    root.style.setProperty("--hero-backdrop-blur", `${heroBackdropBlur}px`);
+    root.style.setProperty("--hero-backdrop-brightness", `${heroBackdropBrightness}%`);
     root.dataset.motion = motion;
     root.dataset.density = density;
     root.dataset.artworkGlow = artworkGlow ? "on" : "off";
     root.dataset.ambience = ambienceStrength;
     root.dataset.playerStyle = playerStyle;
-  }, [accent, ambienceStrength, artworkGlow, backgroundColor, density, motion, playerStyle]);
+  }, [accent, ambienceStrength, artworkGlow, backgroundColor, density, heroBackdropBlur, heroBackdropBrightness, motion, playerStyle]);
 }
