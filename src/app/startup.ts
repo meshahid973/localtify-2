@@ -14,16 +14,16 @@ export async function inspectRuntime(): Promise<RuntimeState> {
   }
 
   try {
-    const [health, app] = await Promise.all([
+    const [health, bootstrap] = await Promise.all([
       appApi.health(),
-      appApi.info(),
+      appApi.bootstrap(),
     ]);
 
     if (health.status !== "ok") {
       return { kind: "error" };
     }
 
-    return { kind: "ready", app };
+    return { kind: "ready", app: bootstrap.app };
   } catch (error) {
     console.error("Localtify native bridge startup check failed.", error);
     return { kind: "error" };

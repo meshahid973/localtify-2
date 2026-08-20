@@ -1,10 +1,7 @@
-export interface AppInfo {
-  name: string;
-  version: string;
-  runtime: "tauri";
-}
+export type { AppInfo, HealthResponse } from "../contracts/domain";
 
-export interface HealthResponse {
-  status: "ok";
-  uptimeMs: number;
+export interface BootstrapState {
+  app: import("../contracts/domain").AppInfo;
+  player: import("../contracts/domain").PlayerState;
+  settings: import("../contracts/domain").AppSettings;
 }
