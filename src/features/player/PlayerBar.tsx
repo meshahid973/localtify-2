@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { ListMusic, Pause, Play, Repeat2, Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
-import { motion } from "motion/react";
 import { AlbumArtwork } from "../../components/ui/AlbumArtwork";
 import { useLibraryStore } from "../library/library.store";
 import { usePlayerStore } from "./player.store";
@@ -36,18 +36,27 @@ export function PlayerBar() {
   }
 
   return (
-    <footer className="fixed inset-x-0 bottom-0 z-40 h-[var(--player-height)] border-t border-white/[0.055] bg-[#090909]">
-      <div className="grid h-full grid-cols-[minmax(220px,1fr)_minmax(340px,1.3fr)_minmax(190px,1fr)] items-center gap-5 px-4">
-        <div className="flex min-w-0 items-center gap-3">
-          <AlbumArtwork artworkKey={current?.artworkKey ?? "empty"} className="size-11 shrink-0 rounded-[5px]" />
-          <div className="min-w-0">
-            <p className="truncate font-mono text-[10px] font-semibold text-[#e7e3d0]">{current?.title ?? "Nothing playing"}</p>
-            <p className="mt-1 truncate font-mono text-[8px] text-white/25">{current?.artistName ?? "Choose something from your library"}</p>
-          </div>
-        </div>
+    <footer className="fixed inset-x-0 bottom-0 z-40 h-[var(--player-height)] bg-black px-2 pb-2 pt-1.5">
+      <div className="grid h-full grid-cols-[minmax(220px,1fr)_minmax(340px,1.28fr)_minmax(180px,1fr)] items-center gap-5 rounded-[14px] border border-white/[0.055] bg-[#090909] px-3.5 shadow-[0_-12px_40px_rgba(0,0,0,.28)]">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.div
+            key={current?.id ?? "empty"}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 6 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            className="flex min-w-0 items-center gap-3"
+          >
+            <AlbumArtwork artworkKey={current?.artworkKey ?? "empty"} className="size-11 shrink-0 rounded-[8px] ring-1 ring-inset ring-white/[0.06]" />
+            <div className="min-w-0">
+              <p className="truncate text-[10px] font-semibold text-white/88">{current?.title ?? "Nothing playing"}</p>
+              <p className="mt-1 truncate text-[8px] text-white/26">{current?.artistName ?? "Choose something from your library"}</p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
 
         <div className="flex min-w-0 flex-col items-center">
-          <div className="flex items-center gap-4 text-white/32">
+          <div className="flex items-center gap-4 text-white/30">
             <ControlButton active={player.shuffle} label="Shuffle" onClick={() => void toggleShuffle()}>
               <Shuffle className="size-3.5" />
             </ControlButton>
@@ -58,11 +67,11 @@ export function PlayerBar() {
               type="button"
               aria-label={playing ? "Pause" : "Play"}
               disabled={!current}
-              whileHover={current ? { scale: 1.045 } : undefined}
-              whileTap={current ? { scale: 0.95 } : undefined}
-              transition={{ type: "spring", stiffness: 480, damping: 30 }}
+              whileHover={current ? { scale: 1.06 } : undefined}
+              whileTap={current ? { scale: 0.93 } : undefined}
+              transition={{ type: "spring", stiffness: 480, damping: 28 }}
               onClick={() => void togglePlayback()}
-              className="grid size-9 place-items-center rounded-full bg-[#f3f0dd] text-[#151515] disabled:opacity-25"
+              className="grid size-9 place-items-center rounded-full bg-[#1ed760] text-black shadow-[0_0_24px_rgba(30,215,96,.16)] disabled:bg-white/20 disabled:shadow-none"
             >
               {playing ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}
             </motion.button>
@@ -71,11 +80,11 @@ export function PlayerBar() {
             </ControlButton>
             <ControlButton active={player.repeat !== "off"} label={`Repeat ${player.repeat}`} onClick={() => void cycleRepeat()}>
               <Repeat2 className="size-3.5" />
-              {player.repeat === "one" && <span className="absolute -right-1 -top-1 font-mono text-[7px] font-bold text-[#1ed760]">1</span>}
+              {player.repeat === "one" && <span className="absolute -right-1 -top-1 text-[7px] font-bold text-[#1ed760]">1</span>}
             </ControlButton>
           </div>
 
-          <div className="mt-2 flex w-full max-w-[610px] items-center gap-2 font-mono text-[7px] tabular-nums text-white/20">
+          <div className="mt-2 flex w-full max-w-[610px] items-center gap-2 text-[7px] tabular-nums text-white/18">
             <span className="w-9 text-right">{formatDuration(player.positionMs)}</span>
             <input
               aria-label="Playback position"
@@ -91,13 +100,13 @@ export function PlayerBar() {
           </div>
         </div>
 
-        <div className="ml-auto flex w-full max-w-[210px] items-center justify-end gap-2">
-          <ListMusic className="mr-2 size-3.5 text-white/18" />
+        <div className="ml-auto flex w-full max-w-[205px] items-center justify-end gap-2">
+          <ListMusic className="mr-2 size-3.5 text-white/16" />
           <button
             type="button"
             aria-label={player.muted ? "Unmute" : "Mute"}
             onClick={() => void toggleMute()}
-            className="text-white/30 transition-colors hover:text-[#e4e0ce]/75"
+            className="text-white/28 transition-colors hover:text-white/70"
           >
             {player.muted ? <VolumeX className="size-3.5" /> : <Volume2 className="size-3.5" />}
           </button>
@@ -124,11 +133,11 @@ function ControlButton({ children, label, active = false, onClick }: { children:
       type="button"
       aria-label={label}
       title={label}
-      whileHover={{ scale: 1.07 }}
-      whileTap={{ scale: 0.93 }}
-      transition={{ type: "spring", stiffness: 500, damping: 32 }}
+      whileHover={{ scale: 1.08, y: -1 }}
+      whileTap={{ scale: 0.92 }}
+      transition={{ type: "spring", stiffness: 500, damping: 30 }}
       onClick={onClick}
-      className={`relative transition-colors ${active ? "text-[#1ed760]" : "hover:text-[#e6e2cf]/75"}`}
+      className={`relative transition-colors ${active ? "text-[#1ed760]" : "hover:text-white/78"}`}
     >
       {children}
     </motion.button>

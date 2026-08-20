@@ -52,7 +52,7 @@ export function App() {
   }, [runtime.kind, refreshLibrary]);
 
   return (
-    <div className="min-h-screen bg-black text-[#f3f0dd]">
+    <div className="min-h-screen bg-black text-white">
       <TitleBar />
       <Sidebar />
 
@@ -60,10 +60,10 @@ export function App() {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={page}
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -3 }}
-            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, x: 10, y: 3 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            exit={{ opacity: 0, x: -6, y: -2 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             className="min-h-full"
           >
             {page === "home" && <HomePage />}

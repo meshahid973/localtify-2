@@ -11,41 +11,29 @@ export function Sidebar() {
     setPage("library");
     window.setTimeout(() => {
       document.querySelector<HTMLInputElement>("[data-library-search]")?.focus();
-    }, 90);
+    }, 100);
   }
 
   return (
-    <aside className="app-sidebar fixed bottom-[var(--player-height)] left-0 top-[var(--titlebar-height)] z-30 flex flex-col border-r border-white/[0.055] bg-[#070707] px-3 py-3.5">
-      <div className="sidebar-mode mb-4 grid grid-cols-2 rounded-[10px] border border-white/[0.055] bg-[#0c0c0c] p-1 font-mono text-[9px] font-semibold uppercase tracking-[0.08em]">
-        <span className="rounded-[7px] bg-[#1a1a19] px-2 py-2 text-center text-[#f0edd9]">Local</span>
-        <button
-          type="button"
-          disabled
-          title="Server mode is not enabled yet"
-          className="rounded-[7px] px-2 py-2 text-white/20"
-        >
-          Server
-        </button>
+    <aside className="app-sidebar fixed bottom-[var(--player-height)] left-0 top-[var(--titlebar-height)] z-30 flex flex-col border-r border-white/[0.05] bg-[#050505] px-3 py-4">
+      <div className="sidebar-label mb-3 px-3">
+        <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/18">Browse</p>
       </div>
 
       <nav className="space-y-1">
         <SidebarButton icon={Home} label="Home" active={page === "home"} onClick={() => setPage("home")} />
         <SidebarButton icon={Search} label="Search" active={false} onClick={openSearch} />
         <SidebarButton icon={Library} label="Library" active={page === "library"} onClick={() => setPage("library")} />
+      </nav>
 
-        <div className="sidebar-label my-3 h-px bg-white/[0.045]" />
+      <div className="sidebar-label my-4 h-px bg-white/[0.04]" />
 
+      <nav className="space-y-1">
         <SidebarButton icon={Download} label="Downloads" active={page === "downloads"} onClick={() => setPage("downloads")} />
       </nav>
 
-      <div className="mt-auto border-t border-white/[0.05] pt-3">
-        <button
-          type="button"
-          className="sidebar-item flex h-10 w-full items-center gap-3 rounded-[9px] px-3 text-left text-white/32 transition-colors hover:bg-white/[0.04] hover:text-white/70"
-        >
-          <Settings className="size-[17px] shrink-0" strokeWidth={1.8} />
-          <span className="sidebar-label font-mono text-[11px]">Settings</span>
-        </button>
+      <div className="mt-auto border-t border-white/[0.045] pt-3">
+        <SidebarButton icon={Settings} label="Settings" active={false} onClick={() => undefined} />
       </div>
     </aside>
   );
@@ -66,22 +54,32 @@ function SidebarButton({
     <motion.button
       type="button"
       onClick={onClick}
-      whileHover={{ x: 1 }}
+      whileHover={{ x: 2 }}
       whileTap={{ scale: 0.985 }}
-      transition={{ type: "spring", stiffness: 460, damping: 34 }}
-      className={`sidebar-item relative flex h-10 w-full items-center gap-3 rounded-[9px] px-3 text-left transition-colors ${
-        active ? "bg-[#1a1a19] text-[#f3f0dd]" : "text-white/34 hover:bg-white/[0.04] hover:text-white/70"
+      transition={{ type: "spring", stiffness: 420, damping: 30 }}
+      className={`sidebar-item relative flex h-10 w-full items-center gap-3 overflow-hidden rounded-[10px] px-3 text-left ${
+        active ? "text-white" : "text-white/38 hover:text-white/72"
       }`}
     >
       {active && (
         <motion.span
-          layoutId="sidebar-active"
-          className="absolute -left-3 h-5 w-[2px] rounded-full bg-[#f3f0dd]"
-          transition={{ type: "spring", stiffness: 430, damping: 34 }}
+          layoutId="sidebar-active-bg"
+          className="absolute inset-0 rounded-[10px] border border-white/[0.055] bg-white/[0.055]"
+          transition={{ type: "spring", stiffness: 390, damping: 32 }}
         />
       )}
-      <Icon className="size-[17px] shrink-0" strokeWidth={active ? 2 : 1.75} />
-      <span className="sidebar-label font-mono text-[11px]">{label}</span>
+      <span className="relative z-10 flex items-center gap-3">
+        <span className="relative">
+          <Icon className="size-[17px] shrink-0" strokeWidth={active ? 2 : 1.75} />
+          {active && (
+            <motion.span
+              layoutId="sidebar-active-dot"
+              className="absolute -right-2 -top-1 size-1.5 rounded-full bg-[#1ed760] shadow-[0_0_10px_rgba(30,215,96,.55)]"
+            />
+          )}
+        </span>
+        <span className="sidebar-label text-[11px] font-medium tracking-[-0.01em]">{label}</span>
+      </span>
     </motion.button>
   );
 }
