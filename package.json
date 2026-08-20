@@ -1,6 +1,6 @@
 {
   "name": "localtify",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "type": "module",
   "description": "A lightweight native local music player built with Tauri, Rust, React, and TypeScript.",

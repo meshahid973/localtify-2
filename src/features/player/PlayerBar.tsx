@@ -7,11 +7,19 @@ import { formatDuration } from "../../lib/format";
 import { MOTION } from "../../lib/motion";
 import { useLibraryStore } from "../library/library.store";
 import { useSettingsStore } from "../settings/settings.store";
+import { usePlaybackClock } from "./usePlaybackClock";
 import { usePlayerStore } from "./player.store";
 
 export function PlayerBar() {
   const tracks = useLibraryStore((state) => state.tracks);
-  const player = usePlayerStore((store) => store.state);
+  const current = usePlayerStore((store) => store.state.currentTrack);
+  const status = usePlayerStore((store) => store.state.status);
+  const serverPositionMs = usePlayerStore((store) => store.state.positionMs);
+  const durationMs = usePlayerStore((store) => store.state.durationMs);
+  const volume = usePlayerStore((store) => store.state.volume);
+  const muted = usePlayerStore((store) => store.state.muted);
+  const shuffle = usePlayerStore((store) => store.state.shuffle);
+  const repeat = usePlayerStore((store) => store.state.repeat);
   const playerStyle = useSettingsStore((state) => state.playerStyle);
   const playerArtworkBackdrop = useSettingsStore((state) => state.playerArtworkBackdrop);
   const playTrack = usePlayerStore((store) => store.playTrack);
@@ -22,15 +30,15 @@ export function PlayerBar() {
   const toggleShuffle = usePlayerStore((store) => store.toggleShuffle);
   const cycleRepeat = usePlayerStore((store) => store.cycleRepeat);
 
-  const current = player.currentTrack;
   const currentArtwork = current ? albumArtworkFor(current.artworkKey) : null;
-  const playing = player.status === "playing";
-  const progress = player.durationMs ? Math.min(100, (player.positionMs / player.durationMs) * 100) : 0;
-  const volumePercent = (player.muted ? 0 : player.volume) * 100;
+  const playing = status === "playing";
+  const visualPositionMs = usePlaybackClock(serverPositionMs, playing, durationMs);
+  const progress = durationMs ? Math.min(100, (visualPositionMs / durationMs) * 100) : 0;
+  const volumePercent = (muted ? 0 : volume) * 100;
 
   function playAdjacent(direction: -1 | 1) {
     if (!tracks.length) return;
-    if (player.shuffle) {
+    if (shuffle) {
       const random = tracks[Math.floor(Math.random() * tracks.length)];
       if (random) void playTrack(random.id);
       return;
@@ -54,17 +62,12 @@ export function PlayerBar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.32 }}
+              transition={{ duration: 0.28 }}
               className="pointer-events-none absolute inset-0 overflow-hidden"
               aria-hidden
             >
-              <img
-                src={currentArtwork}
-                alt=""
-                className="absolute left-1/2 top-1/2 h-[260%] w-[140%] -translate-x-1/2 -translate-y-1/2 scale-110 object-cover opacity-[0.24] blur-[46px] saturate-[1.25]"
-              />
+              <img src={currentArtwork} alt="" className="player-artwork-backdrop absolute object-cover" />
               <div className="player-artwork-vignette absolute inset-0" />
-              <div className="absolute inset-0 bg-black/22" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -78,7 +81,10 @@ export function PlayerBar() {
             transition={MOTION.quick}
             className="player-track relative z-10 flex min-w-0 items-center gap-3"
           >
-            <AlbumArtwork artworkKey={current?.artworkKey ?? "empty"} className="artwork-glow-target size-11 shrink-0 rounded-[8px] ring-1 ring-inset ring-white/[0.05]" />
+            <div className="relative size-11 shrink-0">
+              {currentArtwork && <img src={currentArtwork} alt="" aria-hidden className="image-ambience-aura absolute inset-1 size-9 rounded-[8px] object-cover" />}
+              <AlbumArtwork artworkKey={current?.artworkKey ?? "empty"} eager className="relative z-10 size-11 rounded-[8px] ring-1 ring-inset ring-white/[0.06]" />
+            </div>
             <div className="min-w-0">
               <p className="truncate text-[10px] font-semibold text-white/88">{current?.title ?? "Nothing playing"}</p>
               <p className="mt-1 truncate text-[8px] text-white/28">{current?.artistName ?? "Choose something from your library"}</p>
@@ -88,7 +94,7 @@ export function PlayerBar() {
 
         <div className="player-controls relative z-10 flex min-w-0 flex-col items-center">
           <div className="flex items-center gap-4 text-white/32">
-            <ControlButton active={player.shuffle} label="Shuffle" onClick={() => void toggleShuffle()}>
+            <ControlButton active={shuffle} label="Shuffle" onClick={() => void toggleShuffle()}>
               <Shuffle className="size-3.5" />
             </ControlButton>
             <ControlButton label="Previous" onClick={() => playAdjacent(-1)}>
@@ -109,36 +115,36 @@ export function PlayerBar() {
             <ControlButton label="Next" onClick={() => playAdjacent(1)}>
               <SkipForward className="size-4 fill-current" />
             </ControlButton>
-            <ControlButton active={player.repeat !== "off"} label={`Repeat ${player.repeat}`} onClick={() => void cycleRepeat()}>
+            <ControlButton active={repeat !== "off"} label={`Repeat ${repeat}`} onClick={() => void cycleRepeat()}>
               <Repeat2 className="size-3.5" />
-              {player.repeat === "one" && <span className="absolute -right-1 -top-1 text-[7px] font-bold text-[var(--accent)]">1</span>}
+              {repeat === "one" && <span className="absolute -right-1 -top-1 text-[7px] font-bold text-[var(--accent)]">1</span>}
             </ControlButton>
           </div>
 
           <div className="mt-2 flex w-full max-w-[560px] items-center gap-2 text-[7px] tabular-nums text-white/20">
-            <span className="w-9 text-right">{formatDuration(player.positionMs)}</span>
+            <span className="w-9 text-right">{formatDuration(visualPositionMs)}</span>
             <input
               aria-label="Playback position"
               type="range"
               min="0"
-              max={Math.max(1, player.durationMs)}
-              value={Math.min(player.positionMs, Math.max(1, player.durationMs))}
+              max={Math.max(1, durationMs)}
+              value={Math.min(visualPositionMs, Math.max(1, durationMs))}
               onChange={(event) => void seek(Number(event.currentTarget.value))}
               style={{ "--progress": `${progress}%` } as CSSProperties}
               className="progress-slider flex-1"
             />
-            <span className="w-9">{formatDuration(player.durationMs)}</span>
+            <span className="w-9">{formatDuration(durationMs)}</span>
           </div>
         </div>
 
         <div className="player-volume relative z-10 ml-auto flex w-full max-w-[170px] items-center justify-end gap-2">
           <button
             type="button"
-            aria-label={player.muted ? "Unmute" : "Mute"}
+            aria-label={muted ? "Unmute" : "Mute"}
             onClick={() => void toggleMute()}
             className="text-white/30 transition-colors hover:text-white/72"
           >
-            {player.muted ? <VolumeX className="size-3.5" /> : <Volume2 className="size-3.5" />}
+            {muted ? <VolumeX className="size-3.5" /> : <Volume2 className="size-3.5" />}
           </button>
           <input
             aria-label="Volume"
@@ -146,7 +152,7 @@ export function PlayerBar() {
             min="0"
             max="1"
             step="0.01"
-            value={player.muted ? 0 : player.volume}
+            value={muted ? 0 : volume}
             onChange={(event) => void setVolume(Number(event.currentTarget.value))}
             style={{ "--progress": `${volumePercent}%` } as CSSProperties}
             className="volume-slider w-full"

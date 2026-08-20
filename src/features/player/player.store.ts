@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { PlayerState, RepeatMode } from "../../lib/contracts/domain";
+import type { PlayerState, RepeatMode, Track } from "../../lib/contracts/domain";
 import { playerApi } from "../../lib/ipc/player-api";
 
 const EMPTY_PLAYER: PlayerState = {
@@ -26,6 +26,9 @@ interface PlayerStore {
   toggleShuffle: () => Promise<void>;
   cycleRepeat: () => Promise<void>;
 }
+
+type StorePatch = Partial<PlayerStore> | ((store: PlayerStore) => Partial<PlayerStore>);
+type StoreSetter = (patch: StorePatch) => void;
 
 const repeatOrder: RepeatMode[] = ["off", "all", "one"];
 
@@ -55,19 +58,46 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 }));
 
-async function run(
-  set: (partial: { state?: PlayerState; error?: string | null }) => void,
-  request: Promise<PlayerState>,
-  reportError = true,
-) {
+async function run(set: StoreSetter, request: Promise<PlayerState>, reportError = true) {
   try {
-    const state = await request;
-    set({ state, error: null });
+    const next = await request;
+    set((store) => ({ state: reconcilePlayerState(store.state, next), error: null }));
   } catch (error) {
-    if (reportError) {
-      set({ error: errorMessage(error) });
-    }
+    if (reportError) set({ error: errorMessage(error) });
   }
+}
+
+function reconcilePlayerState(previous: PlayerState, next: PlayerState): PlayerState {
+  const currentTrack = sameTrack(previous.currentTrack, next.currentTrack) ? previous.currentTrack : next.currentTrack;
+  const reconciled = { ...next, currentTrack };
+
+  if (
+    previous.status === reconciled.status &&
+    previous.currentTrack === reconciled.currentTrack &&
+    previous.positionMs === reconciled.positionMs &&
+    previous.durationMs === reconciled.durationMs &&
+    previous.volume === reconciled.volume &&
+    previous.muted === reconciled.muted &&
+    previous.shuffle === reconciled.shuffle &&
+    previous.repeat === reconciled.repeat
+  ) {
+    return previous;
+  }
+
+  return reconciled;
+}
+
+function sameTrack(left: Track | null, right: Track | null) {
+  if (left === right) return true;
+  if (!left || !right) return false;
+  return (
+    left.id === right.id &&
+    left.title === right.title &&
+    left.artistName === right.artistName &&
+    left.albumTitle === right.albumTitle &&
+    left.durationMs === right.durationMs &&
+    left.artworkKey === right.artworkKey
+  );
 }
 
 function errorMessage(error: unknown): string {

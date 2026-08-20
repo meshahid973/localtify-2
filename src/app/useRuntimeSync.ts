@@ -31,14 +31,29 @@ export function useRuntimeSync() {
 
   useEffect(() => {
     if (runtime.kind !== "ready") return;
-    const interval = playerStatus === "playing" ? 500 : 1400;
-    const timer = window.setInterval(() => void syncPlayer(), interval);
+    const interval = playerStatus === "playing" ? 1000 : 3000;
+    const timer = window.setInterval(() => {
+      if (!document.hidden) void syncPlayer();
+    }, interval);
     return () => window.clearInterval(timer);
   }, [runtime.kind, playerStatus, syncPlayer]);
 
   useEffect(() => {
     if (runtime.kind !== "ready") return;
-    const timer = window.setInterval(() => void refreshLibrary(), 8000);
+    const timer = window.setInterval(() => {
+      if (!document.hidden) void refreshLibrary();
+    }, 20000);
     return () => window.clearInterval(timer);
   }, [runtime.kind, refreshLibrary]);
+
+  useEffect(() => {
+    if (runtime.kind !== "ready") return;
+    const onVisibilityChange = () => {
+      if (document.hidden) return;
+      void syncPlayer();
+      void refreshLibrary();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [runtime.kind, refreshLibrary, syncPlayer]);
 }

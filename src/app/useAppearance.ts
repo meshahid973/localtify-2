@@ -7,7 +7,7 @@ export function useAppearance() {
   const motion = useSettingsStore((state) => state.motion);
   const density = useSettingsStore((state) => state.density);
   const artworkGlow = useSettingsStore((state) => state.artworkGlow);
-  const playerArtworkBackdrop = useSettingsStore((state) => state.playerArtworkBackdrop);
+  const ambienceStrength = useSettingsStore((state) => state.ambienceStrength);
   const playerStyle = useSettingsStore((state) => state.playerStyle);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export function useAppearance() {
     root.dataset.motion = motion;
     root.dataset.density = density;
     root.dataset.artworkGlow = artworkGlow ? "on" : "off";
-    root.dataset.playerArtworkBackdrop = playerArtworkBackdrop ? "on" : "off";
+    root.dataset.ambience = ambienceStrength;
     root.dataset.playerStyle = playerStyle;
-  }, [accent, artworkGlow, backgroundColor, density, motion, playerArtworkBackdrop, playerStyle]);
+  }, [accent, ambienceStrength, artworkGlow, backgroundColor, density, motion, playerStyle]);
 }

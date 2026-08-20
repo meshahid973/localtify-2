@@ -19,6 +19,7 @@ export type AccentPreset = keyof typeof ACCENT_COLORS;
 export type MotionPreference = "full" | "subtle" | "off";
 export type DensityPreference = "comfortable" | "compact";
 export type PlayerStyle = "floating" | "flat";
+export type AmbienceStrength = "soft" | "balanced" | "rich";
 
 interface SettingsStore {
   accent: AccentPreset;
@@ -26,14 +27,18 @@ interface SettingsStore {
   motion: MotionPreference;
   density: DensityPreference;
   artworkGlow: boolean;
+  heroArtworkBackdrop: boolean;
   playerArtworkBackdrop: boolean;
+  ambienceStrength: AmbienceStrength;
   playerStyle: PlayerStyle;
   setAccent: (accent: AccentPreset) => void;
   setBackgroundColor: (color: string) => void;
   setMotion: (motion: MotionPreference) => void;
   setDensity: (density: DensityPreference) => void;
   setArtworkGlow: (enabled: boolean) => void;
+  setHeroArtworkBackdrop: (enabled: boolean) => void;
   setPlayerArtworkBackdrop: (enabled: boolean) => void;
+  setAmbienceStrength: (strength: AmbienceStrength) => void;
   setPlayerStyle: (style: PlayerStyle) => void;
   resetAppearance: () => void;
 }
@@ -44,7 +49,9 @@ const DEFAULTS = {
   motion: "full" as MotionPreference,
   density: "comfortable" as DensityPreference,
   artworkGlow: true,
+  heroArtworkBackdrop: true,
   playerArtworkBackdrop: true,
+  ambienceStrength: "balanced" as AmbienceStrength,
   playerStyle: "floating" as PlayerStyle,
 };
 
@@ -64,7 +71,9 @@ export const useSettingsStore = create<SettingsStore>()(
       setMotion: (motion) => set({ motion }),
       setDensity: (density) => set({ density }),
       setArtworkGlow: (artworkGlow) => set({ artworkGlow }),
+      setHeroArtworkBackdrop: (heroArtworkBackdrop) => set({ heroArtworkBackdrop }),
       setPlayerArtworkBackdrop: (playerArtworkBackdrop) => set({ playerArtworkBackdrop }),
+      setAmbienceStrength: (ambienceStrength) => set({ ambienceStrength }),
       setPlayerStyle: (playerStyle) => set({ playerStyle }),
       resetAppearance: () => set(DEFAULTS),
     }),

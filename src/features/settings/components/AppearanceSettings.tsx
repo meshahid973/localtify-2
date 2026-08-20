@@ -4,6 +4,7 @@ import {
   ACCENT_COLORS,
   BACKGROUND_PRESETS,
   type AccentPreset,
+  type AmbienceStrength,
   type DensityPreference,
   type MotionPreference,
   type PlayerStyle,
@@ -17,14 +18,18 @@ export function AppearanceSettings() {
   const motionPreference = useSettingsStore((state) => state.motion);
   const density = useSettingsStore((state) => state.density);
   const artworkGlow = useSettingsStore((state) => state.artworkGlow);
+  const heroArtworkBackdrop = useSettingsStore((state) => state.heroArtworkBackdrop);
   const playerArtworkBackdrop = useSettingsStore((state) => state.playerArtworkBackdrop);
+  const ambienceStrength = useSettingsStore((state) => state.ambienceStrength);
   const playerStyle = useSettingsStore((state) => state.playerStyle);
   const setAccent = useSettingsStore((state) => state.setAccent);
   const setBackgroundColor = useSettingsStore((state) => state.setBackgroundColor);
   const setMotion = useSettingsStore((state) => state.setMotion);
   const setDensity = useSettingsStore((state) => state.setDensity);
   const setArtworkGlow = useSettingsStore((state) => state.setArtworkGlow);
+  const setHeroArtworkBackdrop = useSettingsStore((state) => state.setHeroArtworkBackdrop);
   const setPlayerArtworkBackdrop = useSettingsStore((state) => state.setPlayerArtworkBackdrop);
+  const setAmbienceStrength = useSettingsStore((state) => state.setAmbienceStrength);
   const setPlayerStyle = useSettingsStore((state) => state.setPlayerStyle);
 
   return (
@@ -34,7 +39,7 @@ export function AppearanceSettings() {
       transition={{ duration: 0.32, delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
       className="rounded-[16px] border border-[var(--line)] bg-[var(--surface-1)] p-5"
     >
-      <PanelHeader title="Appearance" description="Keep the layout quiet, then tune the parts that matter." />
+      <PanelHeader title="Appearance" description="Keep Localtify quiet, then tune the atmosphere around your music." />
 
       <SettingBlock label="Background" hint="OLED black is the default. Pick a preset or any custom color.">
         <div className="flex flex-wrap items-center gap-2">
@@ -125,11 +130,27 @@ export function AppearanceSettings() {
         />
       </SettingBlock>
 
+      <SettingBlock label="Ambience strength" hint="Controls image-backed glow without changing the layout.">
+        <Segmented
+          value={ambienceStrength}
+          options={[
+            ["soft", "Soft"],
+            ["balanced", "Balanced"],
+            ["rich", "Rich"],
+          ]}
+          onChange={(value) => setAmbienceStrength(value as AmbienceStrength)}
+        />
+      </SettingBlock>
+
+      <SettingBlock label="Hero artwork background" hint="Show the current song cover across the hero with a dark readability layer.">
+        <Toggle checked={heroArtworkBackdrop} onChange={setHeroArtworkBackdrop} />
+      </SettingBlock>
+
       <SettingBlock label="Player artwork backdrop" hint="Blur the current album cover behind playback and volume controls.">
         <Toggle checked={playerArtworkBackdrop} onChange={setPlayerArtworkBackdrop} />
       </SettingBlock>
 
-      <SettingBlock label="Ambient artwork glow" hint="Adds a restrained halo around featured and current artwork.">
+      <SettingBlock label="Ambient artwork glow" hint="Use the cover image itself for a soft halo around featured artwork.">
         <Toggle checked={artworkGlow} onChange={setArtworkGlow} />
       </SettingBlock>
     </motion.section>
@@ -164,7 +185,7 @@ function SettingBlock({ label, hint, children }: { label: string; hint: string; 
 
 function Segmented({ value, options, onChange }: { value: string; options: Array<[string, string]>; onChange: (value: string) => void }) {
   return (
-    <div className="inline-flex rounded-[10px] border border-[var(--line)] bg-black/25 p-1">
+    <div className="inline-flex flex-wrap rounded-[10px] border border-[var(--line)] bg-black/25 p-1">
       {options.map(([option, label]) => (
         <button
           key={option}

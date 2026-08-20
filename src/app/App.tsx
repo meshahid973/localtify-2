@@ -1,16 +1,18 @@
+import { lazy, Suspense } from "react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { Sidebar } from "../components/layout/Sidebar";
 import { TitleBar } from "../components/layout/TitleBar";
-import { DownloadsPage } from "../features/downloads/DownloadsPage";
 import { HomePage } from "../features/home/HomePage";
-import { LibraryPage } from "../features/library/LibraryPage";
 import { useNavigationStore } from "../features/navigation/navigation.store";
 import { PlayerBar } from "../features/player/PlayerBar";
-import { SettingsPage } from "../features/settings/SettingsPage";
 import { useSettingsStore } from "../features/settings/settings.store";
 import { EASE_OUT } from "../lib/motion";
 import { useAppearance } from "./useAppearance";
 import { useRuntimeSync } from "./useRuntimeSync";
+
+const LibraryPage = lazy(() => import("../features/library/LibraryPage").then((module) => ({ default: module.LibraryPage })));
+const DownloadsPage = lazy(() => import("../features/downloads/DownloadsPage").then((module) => ({ default: module.DownloadsPage })));
+const SettingsPage = lazy(() => import("../features/settings/SettingsPage").then((module) => ({ default: module.SettingsPage })));
 
 export function App() {
   useAppearance();
@@ -36,10 +38,12 @@ export function App() {
               transition={{ duration: pageDuration, ease: EASE_OUT }}
               className="min-h-full"
             >
-              {page === "home" && <HomePage />}
-              {page === "library" && <LibraryPage />}
-              {page === "downloads" && <DownloadsPage />}
-              {page === "settings" && <SettingsPage />}
+              <Suspense fallback={<div className="min-h-full" />}>
+                {page === "home" && <HomePage />}
+                {page === "library" && <LibraryPage />}
+                {page === "downloads" && <DownloadsPage />}
+                {page === "settings" && <SettingsPage />}
+              </Suspense>
             </motion.div>
           </AnimatePresence>
         </div>

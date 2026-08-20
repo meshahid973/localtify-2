@@ -9,6 +9,8 @@ import { MOTION } from "../../lib/motion";
 import { useLibraryStore } from "../library/library.store";
 import { useNavigationStore } from "../navigation/navigation.store";
 import { usePlayerStore } from "../player/player.store";
+import { useSettingsStore } from "../settings/settings.store";
+import { HeroArtworkBackdrop } from "./HeroArtworkBackdrop";
 
 export function HomePage() {
   const reduceMotion = useReducedMotion();
@@ -17,13 +19,15 @@ export function HomePage() {
   const scanning = useLibraryStore((state) => state.scanning);
   const libraryError = useLibraryStore((state) => state.error);
   const addFolder = useLibraryStore((state) => state.addFolder);
-  const player = usePlayerStore((state) => state.state);
+  const currentTrack = usePlayerStore((state) => state.state.currentTrack);
   const playerError = usePlayerStore((state) => state.error);
   const playTrack = usePlayerStore((state) => state.playTrack);
+  const heroArtworkBackdrop = useSettingsStore((state) => state.heroArtworkBackdrop);
   const setPage = useNavigationStore((state) => state.setPage);
 
-  const featured = player.currentTrack ?? tracks[0] ?? null;
+  const featured = currentTrack ?? tracks[0] ?? null;
   const heroArtwork = featured ? albumArtworkFor(featured.artworkKey) : albumArtworkFor("localtify-home-hero");
+  const currentArtwork = currentTrack ? albumArtworkFor(currentTrack.artworkKey) : null;
   const quickPicks = tracks.slice(0, 6);
   const recentTracks = tracks.slice(0, 6);
 
@@ -55,50 +59,43 @@ export function HomePage() {
       />
 
       <motion.section
-        initial={reduceMotion ? false : { opacity: 0, y: 9 }}
+        initial={reduceMotion ? false : { opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...MOTION.section, delay: 0.04 }}
         className="home-hero relative mt-6 overflow-hidden rounded-[18px] border border-[var(--line)] bg-[var(--surface-1)]"
       >
-        {heroArtwork && (
-          <img
-            src={heroArtwork}
-            alt=""
-            aria-hidden
-            className="home-hero-ambient pointer-events-none absolute rounded-full object-cover"
-          />
-        )}
+        <HeroArtworkBackdrop source={currentArtwork} enabled={heroArtworkBackdrop} />
 
-        <div className="home-hero-grid relative grid items-center">
-          <div className="min-w-0 max-w-[720px]">
-            <p className="text-[8px] font-semibold uppercase tracking-[0.18em] text-white/26">
-              {featured ? "Now playing" : "On this device"}
+        <div className="home-hero-grid relative z-10 grid items-center">
+          <div className="max-w-[760px]">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/35">
+              {currentTrack ? "Now playing" : featured ? "From your library" : "On this device"}
             </p>
 
             <motion.h2
               key={featured?.id ?? "empty"}
-              initial={reduceMotion ? false : { opacity: 0, y: 7 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...MOTION.enter, delay: 0.07 }}
-              className="home-hero-title mt-4 max-w-[720px] font-semibold leading-[0.95] tracking-[-0.068em] text-white"
+              className="home-hero-title mt-4 max-w-[760px] font-semibold leading-[0.94] tracking-[-0.07em] text-white"
             >
               {featured?.title ?? "Your music. Nothing else."}
             </motion.h2>
 
-            <p className="mt-4 max-w-xl text-[10px] leading-5 text-white/36">
+            <p className="mt-5 max-w-xl text-[11px] leading-5 text-white/46">
               {featured
                 ? `${featured.artistName}${featured.albumTitle ? ` · ${featured.albumTitle}` : ""}`
                 : "A native local player that stays quiet until you need it."}
             </p>
 
-            <div className="mt-6 flex items-center gap-2.5">
+            <div className="mt-7 flex items-center gap-3">
               <motion.button
                 type="button"
-                whileHover={reduceMotion ? undefined : { scale: 1.02 }}
+                whileHover={reduceMotion ? undefined : { scale: 1.025 }}
                 whileTap={{ scale: 0.96 }}
                 transition={MOTION.spring}
                 onClick={() => featured ? void playTrack(featured.id) : void chooseFolder()}
-                className="flex h-9 items-center gap-2 rounded-full bg-[var(--accent)] px-4 text-[10px] font-bold text-black"
+                className="flex h-10 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[10px] font-bold text-black"
               >
                 {featured ? <Play className="size-3.5 fill-current" /> : <FolderPlus className="size-3.5" />}
                 {featured ? "Play" : "Add music"}
@@ -109,7 +106,7 @@ export function HomePage() {
                 whileHover={reduceMotion ? undefined : { y: -1 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setPage("library")}
-                className="flex h-9 items-center gap-2 rounded-full border border-[var(--line)] bg-black/20 px-4 text-[10px] font-medium text-white/46 transition-colors hover:bg-white/[0.035] hover:text-white/78"
+                className="flex h-10 items-center gap-2 rounded-full border border-[var(--line)] bg-black/30 px-4 text-[10px] font-medium text-white/55 transition-colors hover:bg-white/[0.04] hover:text-white/82"
               >
                 <Library className="size-3.5" />
                 Library
@@ -118,16 +115,25 @@ export function HomePage() {
           </div>
 
           <motion.div
-            initial={reduceMotion ? false : { opacity: 0, x: 10, scale: 0.975 }}
+            initial={reduceMotion ? false : { opacity: 0, x: 12, scale: 0.97 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ ...MOTION.softSpring, delay: 0.08 }}
-            whileHover={reduceMotion ? undefined : { y: -2, scale: 1.008 }}
-            className="home-hero-art relative mx-auto aspect-square w-full"
+            whileHover={reduceMotion ? undefined : { y: -3, scale: 1.01 }}
+            className="home-hero-art relative mx-auto hidden aspect-square w-full md:block"
           >
+            {heroArtwork && (
+              <img
+                src={heroArtwork}
+                alt=""
+                aria-hidden
+                className="image-ambience-aura absolute inset-2 size-[calc(100%-16px)] rounded-[18px] object-cover"
+              />
+            )}
             <AlbumArtwork
               artworkKey={featured?.artworkKey ?? "localtify-home-hero"}
               alt={featured ? `${featured.title} artwork` : "Localtify artwork"}
-              className="artwork-glow-target relative size-full rounded-[15px] ring-1 ring-inset ring-white/[0.065]"
+              eager
+              className="relative z-10 size-full rounded-[16px] ring-1 ring-inset ring-white/[0.08]"
             />
           </motion.div>
         </div>
@@ -147,20 +153,20 @@ export function HomePage() {
               <motion.button
                 key={track.id}
                 type="button"
-                initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 7 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.22, delay: Math.min(index * 0.025, 0.12), ease: MOTION.enter.ease }}
-                whileHover={reduceMotion ? undefined : { y: -1 }}
-                whileTap={{ scale: 0.994 }}
+                transition={{ duration: 0.24, delay: Math.min(index * 0.03, 0.14), ease: MOTION.enter.ease }}
+                whileHover={reduceMotion ? undefined : { y: -2 }}
+                whileTap={{ scale: 0.992 }}
                 onClick={() => void playTrack(track.id)}
-                className="group flex h-[58px] min-w-0 items-center overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--surface-1)] text-left transition-colors hover:bg-[var(--surface-2)]"
+                className="group flex h-[62px] min-w-0 items-center overflow-hidden rounded-[11px] border border-[var(--line)] bg-[var(--surface-1)] text-left transition-colors hover:bg-[var(--surface-2)]"
               >
-                <AlbumArtwork artworkKey={track.artworkKey} alt={`${track.title} artwork`} className="size-[58px] shrink-0" />
+                <AlbumArtwork artworkKey={track.artworkKey} alt={`${track.title} artwork`} className="size-[62px] shrink-0" />
                 <span className="min-w-0 px-3">
-                  <span className="block truncate text-[10px] font-semibold text-white/82">{track.title}</span>
-                  <span className="mt-1 block truncate text-[8px] text-white/24">{track.artistName}</span>
+                  <span className="block truncate text-[11px] font-semibold text-white/84">{track.title}</span>
+                  <span className="mt-1 block truncate text-[9px] text-white/26">{track.artistName}</span>
                 </span>
-                <span className="ml-auto mr-3 grid size-7 shrink-0 place-items-center rounded-full bg-white text-black opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                <span className="ml-auto mr-3 grid size-8 shrink-0 translate-y-1 place-items-center rounded-full bg-white text-black opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
                   <Play className="ml-0.5 size-3 fill-current" />
                 </span>
               </motion.button>
@@ -179,25 +185,25 @@ export function HomePage() {
               <motion.button
                 key={track.id}
                 type="button"
-                initial={reduceMotion ? false : { opacity: 0, y: 7 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.24, delay: Math.min(index * 0.025, 0.12), ease: MOTION.enter.ease }}
-                whileHover={reduceMotion ? undefined : { y: -3 }}
+                transition={{ duration: 0.26, delay: Math.min(index * 0.03, 0.15), ease: MOTION.enter.ease }}
+                whileHover={reduceMotion ? undefined : { y: -4 }}
                 onClick={() => void playTrack(track.id)}
                 className="group min-w-0 text-left"
               >
-                <div className="relative aspect-square overflow-hidden rounded-[12px] bg-[var(--surface-1)] ring-1 ring-inset ring-white/[0.045]">
+                <div className="relative aspect-square overflow-hidden rounded-[13px] bg-[var(--surface-1)] ring-1 ring-inset ring-white/[0.045]">
                   <AlbumArtwork
                     artworkKey={track.artworkKey}
                     alt={`${track.title} artwork`}
-                    className="size-full transition-transform duration-250 ease-out group-hover:scale-[1.015]"
+                    className="size-full transition-transform duration-300 ease-out group-hover:scale-[1.02]"
                   />
-                  <span className="absolute bottom-2.5 right-2.5 grid size-8 translate-y-1 place-items-center rounded-full bg-white text-black opacity-0 transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100">
-                    <Play className="ml-0.5 size-3 fill-current" />
+                  <span className="absolute bottom-3 right-3 grid size-9 translate-y-2 place-items-center rounded-full bg-white text-black opacity-0 shadow-xl transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+                    <Play className="ml-0.5 size-3.5 fill-current" />
                   </span>
                 </div>
-                <p className="mt-2.5 truncate text-[10px] font-semibold text-white/78">{track.title}</p>
-                <p className="mt-1 truncate text-[8px] text-white/22">{track.artistName}</p>
+                <p className="mt-3 truncate text-[11px] font-semibold text-white/80">{track.title}</p>
+                <p className="mt-1 truncate text-[9px] text-white/24">{track.artistName}</p>
               </motion.button>
             ))}
           </div>
@@ -211,10 +217,10 @@ function EmptyState({ onClick }: { onClick: () => void }) {
   return (
     <motion.button
       type="button"
-      whileHover={{ scale: 1.002 }}
-      whileTap={{ scale: 0.998 }}
+      whileHover={{ scale: 1.003 }}
+      whileTap={{ scale: 0.997 }}
       onClick={onClick}
-      className="flex min-h-24 w-full items-center justify-center rounded-[10px] border border-dashed border-white/[0.07] bg-[var(--surface-1)] text-[9px] text-white/25 transition-colors hover:border-white/[0.12] hover:text-white/50"
+      className="flex min-h-28 w-full items-center justify-center rounded-[11px] border border-dashed border-white/[0.07] bg-[var(--surface-1)] text-[10px] text-white/26 transition-colors hover:border-white/[0.12] hover:text-white/52"
     >
       Add music to build your home
     </motion.button>

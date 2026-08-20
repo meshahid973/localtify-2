@@ -18,12 +18,33 @@
   --sidebar-width: 176px;
   --player-height: 84px;
   --titlebar-height: 30px;
+  --hero-backdrop-opacity: 0.26;
+  --ambience-aura-opacity: 0.26;
+  --ambience-blur: 20px;
+  --player-backdrop-opacity: 0.22;
+  --player-ambience-blur: 16px;
   font-family: var(--font-sans);
   color: #fff;
   background: var(--app-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   color-scheme: dark;
+}
+
+:root[data-ambience="soft"] {
+  --hero-backdrop-opacity: 0.17;
+  --ambience-aura-opacity: 0.17;
+  --ambience-blur: 14px;
+  --player-backdrop-opacity: 0.14;
+  --player-ambience-blur: 12px;
+}
+
+:root[data-ambience="rich"] {
+  --hero-backdrop-opacity: 0.34;
+  --ambience-aura-opacity: 0.34;
+  --ambience-blur: 24px;
+  --player-backdrop-opacity: 0.29;
+  --player-ambience-blur: 20px;
 }
 
 :root[data-density="compact"] {
@@ -61,26 +82,33 @@ img { user-select: none; -webkit-user-drag: none; }
   padding: clamp(18px, 2.2vw, 30px) clamp(18px, 2.7vw, 38px) 64px;
 }
 
+.home-hero {
+  contain: paint;
+  isolation: isolate;
+}
 .home-hero-grid {
   min-height: clamp(240px, 24vw, 300px);
   grid-template-columns: minmax(0, 1fr) clamp(180px, 18vw, 250px);
   gap: clamp(22px, 3vw, 40px);
   padding: clamp(22px, 3vw, 38px);
 }
-
 .home-hero-title { font-size: clamp(2.25rem, 4.05vw, 4.2rem); }
 .home-hero-art { max-width: 250px; }
-.home-hero-ambient {
-  right: -4%;
-  top: 50%;
-  width: min(31vw, 340px);
-  height: min(31vw, 340px);
-  transform: translateY(-50%) scale(1.2);
-  filter: blur(70px);
-  opacity: 0.085;
-  transition: opacity 220ms ease;
+.hero-backdrop-image {
+  opacity: var(--hero-backdrop-opacity);
+  transform: scale(1.015);
 }
-:root[data-artwork-glow="off"] .home-hero-ambient { opacity: 0; }
+.hero-backdrop-scrim {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--app-bg) 97%, transparent) 0%, color-mix(in srgb, var(--app-bg) 86%, transparent) 48%, color-mix(in srgb, var(--app-bg) 54%, transparent) 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--app-bg) 26%, transparent), color-mix(in srgb, var(--app-bg) 76%, transparent));
+}
+.image-ambience-aura {
+  opacity: var(--ambience-aura-opacity);
+  filter: blur(var(--ambience-blur)) saturate(1.16);
+  transform: scale(1.12);
+}
+:root[data-artwork-glow="off"] .image-ambience-aura { display: none; }
 
 .home-section { margin-top: clamp(28px, 3.2vw, 40px); }
 .quick-picks-grid { grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr)); }
@@ -89,9 +117,21 @@ img { user-select: none; -webkit-user-drag: none; }
 .player-shell {
   grid-template-columns: minmax(190px, 1fr) minmax(320px, 1.3fr) minmax(140px, .85fr);
   gap: 18px;
+  contain: paint;
+  isolation: isolate;
+}
+.player-artwork-backdrop {
+  inset: -9%;
+  width: 118%;
+  height: 118%;
+  opacity: var(--player-backdrop-opacity);
+  filter: blur(var(--player-ambience-blur)) saturate(1.18) brightness(.72);
+  transform: scale(1.04);
 }
 .player-artwork-vignette {
-  background: linear-gradient(90deg, color-mix(in srgb, var(--app-bg) 86%, transparent), color-mix(in srgb, var(--app-bg) 68%, transparent) 50%, color-mix(in srgb, var(--app-bg) 84%, transparent));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--app-bg) 82%, transparent), color-mix(in srgb, var(--app-bg) 54%, transparent) 52%, color-mix(in srgb, var(--app-bg) 80%, transparent)),
+    linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.36));
 }
 
 :root[data-motion="off"] .app-content { scroll-behavior: auto; }
@@ -100,12 +140,6 @@ img { user-select: none; -webkit-user-drag: none; }
   content-visibility: auto;
   contain: layout paint style;
   contain-intrinsic-size: 1px 360px;
-}
-
-:root[data-artwork-glow="on"] .artwork-glow-target {
-  box-shadow:
-    0 22px 64px rgba(0, 0, 0, 0.58),
-    0 0 48px color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .hide-scrollbar { scrollbar-width: none; }
@@ -201,6 +235,9 @@ img { user-select: none; -webkit-user-drag: none; }
   .player-shell { grid-template-columns: minmax(155px, .8fr) minmax(270px, 1.35fr) 40px; }
   .player-volume { max-width: 40px; }
   .player-volume .volume-slider { display: none; }
+  .library-table { grid-template-columns: 38px minmax(0, 1fr) 64px !important; }
+  .library-album-column { display: none; }
+  .library-search input { width: 120px; }
 }
 
 @media (max-height: 760px) {
