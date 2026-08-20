@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2d98e6"/>
+      <stop offset="0.52" stop-color="#70c9f4"/>
+      <stop offset="1" stop-color="#c9ecff"/>
+    </linearGradient>
+    <linearGradient id="hillBack" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#65c849"/>
+      <stop offset="0.55" stop-color="#3ca632"/>
+      <stop offset="1" stop-color="#247a2d"/>
+    </linearGradient>
+    <linearGradient id="hillFront" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#9be75c"/>
+      <stop offset="0.45" stop-color="#58c33e"/>
+      <stop offset="1" stop-color="#208137"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#fffde9" stop-opacity="0.98"/>
+      <stop offset="0.45" stop-color="#fff5ad" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#fff5ad" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="cloudBlur" x="-20%" y="-30%" width="140%" height="160%">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+  <circle cx="1475" cy="178" r="210" fill="url(#sun)"/>
+
+  <g fill="#ffffff" opacity="0.86" filter="url(#cloudBlur)">
+    <g transform="translate(180 165)">
+      <ellipse cx="0" cy="42" rx="118" ry="38"/>
+      <ellipse cx="88" cy="26" rx="92" ry="52"/>
+      <ellipse cx="176" cy="44" rx="118" ry="38"/>
+      <ellipse cx="112" cy="66" rx="170" ry="42"/>
+    </g>
+    <g transform="translate(1110 288) scale(.72)">
+      <ellipse cx="0" cy="42" rx="118" ry="38"/>
+      <ellipse cx="88" cy="26" rx="92" ry="52"/>
+      <ellipse cx="176" cy="44" rx="118" ry="38"/>
+      <ellipse cx="112" cy="66" rx="170" ry="42"/>
+    </g>
+    <g transform="translate(1550 120) scale(.52)">
+      <ellipse cx="0" cy="42" rx="118" ry="38"/>
+      <ellipse cx="88" cy="26" rx="92" ry="52"/>
+      <ellipse cx="176" cy="44" rx="118" ry="38"/>
+      <ellipse cx="112" cy="66" rx="170" ry="42"/>
+    </g>
+  </g>
+
+  <path d="M0 785 C245 650 475 618 725 705 C960 786 1184 747 1424 641 C1620 554 1790 575 1920 652 L1920 1080 L0 1080 Z" fill="url(#hillBack)"/>
+  <path d="M0 884 C242 707 487 678 735 757 C1010 845 1264 807 1480 710 C1654 632 1806 658 1920 733 L1920 1080 L0 1080 Z" fill="url(#hillFront)"/>
+
+  <path d="M0 930 C305 772 540 768 804 842 C1088 922 1320 874 1570 784 C1712 733 1838 742 1920 790" fill="none" stroke="#c8f184" stroke-width="8" stroke-opacity="0.26"/>
+  <path d="M0 963 C316 818 570 820 826 886 C1094 956 1340 911 1580 833 C1720 787 1838 792 1920 838" fill="none" stroke="#e9ffb3" stroke-width="3" stroke-opacity="0.18"/>
+
+  <rect y="1005" width="1920" height="75" fill="#146d35" opacity="0.18"/>
+</svg>

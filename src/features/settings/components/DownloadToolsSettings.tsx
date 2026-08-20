@@ -19,22 +19,22 @@ export function DownloadToolsSettings() {
 
   return (
     <motion.section
-      initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.32, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-      className="themed-panel rounded-[16px] border border-[var(--line)] bg-[var(--surface-1)] p-5"
+      transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+      className="settings-surface themed-panel overflow-hidden rounded-[14px] border border-[var(--line)] bg-[var(--surface-1)]"
     >
-      <div className="flex items-start gap-3">
-        <span className="grid size-9 shrink-0 place-items-center rounded-[9px] bg-white/[0.05] text-white/55">
-          <Wrench className="size-4" />
+      <div className="flex items-start gap-3 px-4 py-4 sm:px-5">
+        <span className="grid size-8 shrink-0 place-items-center rounded-[9px] bg-white/[0.045] text-white/48">
+          <Wrench className="size-3.5" />
         </span>
         <div>
-          <h2 className="text-[17px] font-semibold tracking-[-0.03em]">Download tools</h2>
-          <p className="mt-1 text-[10px] leading-4 text-white/30">One-time setup for audio downloads and MP3 conversion.</p>
+          <h2 className="text-[12px] font-semibold tracking-[-0.02em] text-white/84">Download tools</h2>
+          <p className="mt-1 text-[9px] leading-4 text-white/26">One-time setup for yt-dlp and MP3 conversion.</p>
         </div>
       </div>
 
-      <div className="mt-5 space-y-3">
+      <div className="border-t border-[var(--line)] px-4 sm:px-5">
         <ToolRow
           name="yt-dlp"
           description={tools?.ytDlpManaged ? "Managed by Localtify" : tools?.ytDlp ? "Detected on this PC" : "Not installed"}
@@ -58,15 +58,11 @@ export function DownloadToolsSettings() {
         />
       </div>
 
-      <p className="themed-card mt-5 rounded-[10px] border border-[var(--line)] bg-black/30 px-4 py-3 text-[9px] leading-5 text-white/28">
-        yt-dlp is stored inside Localtify's app-data folder. On Windows, FFmpeg setup uses Windows Package Manager.
-      </p>
+      <div className="border-t border-[var(--line)] px-4 py-3 text-[8px] leading-4 text-white/20 sm:px-5">
+        yt-dlp is stored in Localtify app data. FFmpeg setup uses Windows Package Manager when available.
+      </div>
 
-      {error && (
-        <div className="mt-3 rounded-[10px] border border-red-400/15 bg-red-500/[0.06] px-3 py-2 text-[9px] text-red-200/80">
-          {error}
-        </div>
-      )}
+      {error && <div className="border-t border-red-400/10 bg-red-500/[0.05] px-4 py-3 text-[8px] text-red-200/80 sm:px-5">{error}</div>}
     </motion.section>
   );
 }
@@ -91,25 +87,26 @@ function ToolRow({
   onInstall: () => void;
 }) {
   return (
-    <div className="themed-card rounded-[11px] border border-[var(--line)] bg-black/30 p-4">
-      <div className="flex items-center gap-3">
-        <span className={`grid size-8 place-items-center rounded-[8px] ${ready ? "bg-white/[0.06] text-white/74" : "bg-white/[0.04] text-white/28"}`}>
-          {ready ? <Check className="size-4" /> : <Icon className="size-4" />}
+    <div className="grid gap-3 border-b border-[var(--line)] py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+      <div className="flex min-w-0 items-start gap-3">
+        <span className={`grid size-8 shrink-0 place-items-center rounded-[8px] ${ready ? "bg-white/[0.055] text-white/70" : "bg-white/[0.03] text-white/24"}`}>
+          {ready ? <Check className="size-3.5" /> : <Icon className="size-3.5" />}
         </span>
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold text-white/80">{name}</p>
-          <p className="mt-0.5 text-[9px] text-white/28">{description}</p>
+          <p className="text-[10px] font-semibold text-white/72">{name}</p>
+          <p className="mt-1 text-[8px] text-white/24">{description}</p>
+          {path && <p className="mt-1.5 truncate font-mono text-[7px] text-white/14">{path}</p>}
         </div>
-        <Pressable
-          strength="subtle"
-          disabled={busy || (ready && buttonLabel === "Ready")}
-          onClick={onInstall}
-          className="themed-button ml-auto rounded-full border border-[var(--line)] px-3 py-2 text-[9px] text-white/48 disabled:opacity-35"
-        >
-          <span className="relative z-10">{busy ? "Setting up…" : buttonLabel}</span>
-        </Pressable>
       </div>
-      {path && <p className="mt-3 truncate text-[8px] text-white/18">{path}</p>}
+
+      <Pressable
+        strength="subtle"
+        disabled={busy || (ready && buttonLabel === "Ready")}
+        onClick={onInstall}
+        className="themed-button rounded-full border border-[var(--line)] px-3 py-2 text-[8px] font-medium text-white/46 disabled:opacity-35"
+      >
+        <span className="relative z-10">{busy ? "Setting up…" : buttonLabel}</span>
+      </Pressable>
     </div>
   );
 }

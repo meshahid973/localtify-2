@@ -1,6 +1,6 @@
 [package]
 name = "localtify"
-version = "0.10.0"
+version = "0.10.1"
 description = "Native Localtify desktop core"
 authors = ["meshahid973"]
 edition = "2024"

@@ -1,13 +1,12 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import { Gauge, Layers3, Palette, Sparkles, Waves } from "lucide-react";
+import { Layers3, MousePointer2, Palette, Sparkles, SlidersHorizontal } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { Pressable } from "../../../ui/motion/Pressable";
 import {
   ACCENT_COLORS,
   BACKGROUND_PRESETS,
   type AccentPreset,
-  type AeroEnvironment,
   type AeroGlassStrength,
   type AmbienceStrength,
   type BounceIntensity,
@@ -33,7 +32,6 @@ export function AppearanceSettings() {
   const playerArtworkBackdrop = useSettingsStore((state) => state.playerArtworkBackdrop);
   const ambienceStrength = useSettingsStore((state) => state.ambienceStrength);
   const playerStyle = useSettingsStore((state) => state.playerStyle);
-  const aeroEnvironment = useSettingsStore((state) => state.aeroEnvironment);
   const aeroGlass = useSettingsStore((state) => state.aeroGlass);
   const aeroBubbles = useSettingsStore((state) => state.aeroBubbles);
   const aeroSaturation = useSettingsStore((state) => state.aeroSaturation);
@@ -52,225 +50,231 @@ export function AppearanceSettings() {
   const setPlayerArtworkBackdrop = useSettingsStore((state) => state.setPlayerArtworkBackdrop);
   const setAmbienceStrength = useSettingsStore((state) => state.setAmbienceStrength);
   const setPlayerStyle = useSettingsStore((state) => state.setPlayerStyle);
-  const setAeroEnvironment = useSettingsStore((state) => state.setAeroEnvironment);
   const setAeroGlass = useSettingsStore((state) => state.setAeroGlass);
   const setAeroBubbles = useSettingsStore((state) => state.setAeroBubbles);
   const setAeroSaturation = useSettingsStore((state) => state.setAeroSaturation);
   const setAeroBackgroundMotion = useSettingsStore((state) => state.setAeroBackgroundMotion);
 
   return (
-    <motion.section
-      initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+    <motion.div
+      initial={reduceMotion ? false : { opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
-      className="themed-panel rounded-[16px] border border-[var(--line)] bg-[var(--surface-1)] p-4 sm:p-5"
+      transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+      className="space-y-3"
     >
-      <PanelHeader title="Appearance" description="Choose the material, interaction physics and artwork atmosphere that make Localtify feel right." />
+      <SettingsSection icon={Layers3} title="Theme" description="Keep OLED minimal or switch to the brighter Aero world.">
+        <div className="grid gap-2 sm:grid-cols-2">
+          <ThemeChoice
+            id="oled"
+            active={theme === "oled"}
+            title="OLED"
+            description="Pure black and artwork-led colour."
+            onClick={() => setTheme("oled")}
+          />
+          <ThemeChoice
+            id="aero"
+            active={theme === "aero"}
+            title="Frutiger Aero"
+            description="Blue sky, green hills, glass and a few bubbles."
+            onClick={() => setTheme("aero")}
+          />
+        </div>
+      </SettingsSection>
 
-      <div className="mt-5 grid gap-3 xl:grid-cols-2">
-        <SettingGroup icon={Layers3} title="Theme" description="One app, two visual materials." wide>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <ThemeChoice
-              id="oled"
-              active={theme === "oled"}
-              title="OLED"
-              description="Pure black, restrained surfaces and album-led colour."
-              onClick={() => setTheme("oled")}
-            />
-            <ThemeChoice
-              id="aero"
-              active={theme === "aero"}
-              title="Frutiger Aero"
-              description="Glossy glass, optimistic colour, bubbles and nature-tech atmosphere."
-              onClick={() => setTheme("aero")}
-            />
-          </div>
-        </SettingGroup>
+      <SettingsSection icon={MousePointer2} title="Motion" description="Tactile interactions without making the whole app bounce.">
+        <SettingsRow label="Motion style" hint="osu! Elastic gives controls the strongest hold-and-release feel.">
+          <Segmented
+            value={motionPreference}
+            options={[
+              ["localtify", "Localtify"],
+              ["osu", "osu! Elastic"],
+              ["calm", "Calm"],
+              ["off", "Off"],
+            ]}
+            onChange={(value) => setMotion(value as MotionPreference)}
+          />
+        </SettingsRow>
+        <SettingsRow label="Bounce" hint="How far buttons compress and overshoot on release.">
+          <Segmented
+            value={bounceIntensity}
+            options={[
+              ["subtle", "Subtle"],
+              ["balanced", "Balanced"],
+              ["playful", "Playful"],
+            ]}
+            onChange={(value) => setBounceIntensity(value as BounceIntensity)}
+          />
+        </SettingsRow>
+      </SettingsSection>
 
-        <SettingGroup icon={Gauge} title="Interaction physics" description="osu!-inspired hover, hold and elastic release without copying osu!'s visuals.">
-          <SettingBlock label="Motion style" hint="osu! Elastic is the most tactile; Calm keeps only essential movement.">
-            <Segmented
-              value={motionPreference}
-              options={[
-                ["localtify", "Localtify"],
-                ["osu", "osu! Elastic"],
-                ["calm", "Calm"],
-                ["off", "Off"],
-              ]}
-              onChange={(value) => setMotion(value as MotionPreference)}
-            />
-          </SettingBlock>
-
-          <SettingBlock label="Interaction bounce" hint="Controls how much hover lift, hold compression and release overshoot you feel.">
-            <Segmented
-              value={bounceIntensity}
-              options={[
-                ["subtle", "Subtle"],
-                ["balanced", "Balanced"],
-                ["playful", "Playful"],
-              ]}
-              onChange={(value) => setBounceIntensity(value as BounceIntensity)}
-            />
-          </SettingBlock>
-        </SettingGroup>
-
-        <SettingGroup icon={Palette} title={theme === "oled" ? "OLED canvas" : "Aero material"} description={theme === "oled" ? "Keep the canvas dark and let artwork carry the colour." : "Tune the environment and glossy material without changing the layout."}>
-          {theme === "oled" ? (
-            <>
-              <SettingBlock label="Background" hint="OLED black stays the default.">
-                <div className="flex flex-wrap items-center gap-2">
-                  {(Object.entries(BACKGROUND_PRESETS) as Array<[keyof typeof BACKGROUND_PRESETS, string]>).map(([name, color]) => (
-                    <Pressable
-                      key={name}
-                      strength="subtle"
-                      flash={false}
-                      onClick={() => setBackgroundColor(color)}
-                      className={`relative h-9 w-12 rounded-[10px] border transition-colors ${
-                        backgroundColor === color ? "border-white/70" : "border-white/[0.10] hover:border-white/28"
-                      }`}
-                      style={{ background: color }}
-                      ariaLabel={`${name} background`}
-                      title={`${name} background`}
-                    >
-                      {backgroundColor === color && <span className="absolute inset-x-3 bottom-1 z-10 h-0.5 rounded-full bg-white/80" />}
-                    </Pressable>
-                  ))}
-
-                  <label className="flex h-9 items-center gap-2 rounded-[10px] border border-[var(--line)] bg-black/20 px-2.5 text-[9px] text-white/40">
-                    <input
-                      type="color"
-                      value={backgroundColor}
-                      onChange={(event) => setBackgroundColor(event.currentTarget.value)}
-                      className="size-5 cursor-pointer border-0 bg-transparent p-0"
-                      aria-label="Custom background color"
-                    />
-                    <span className="font-mono uppercase">{backgroundColor}</span>
-                  </label>
-                </div>
-              </SettingBlock>
-            </>
-          ) : (
-            <>
-              <SettingBlock label="Environment" hint="Change the optimistic backdrop while keeping the same interface.">
-                <Segmented
-                  value={aeroEnvironment}
-                  options={[
-                    ["sky", "Sky"],
-                    ["ocean", "Ocean"],
-                    ["meadow", "Meadow"],
-                  ]}
-                  onChange={(value) => setAeroEnvironment(value as AeroEnvironment)}
-                />
-              </SettingBlock>
-
-              <SettingBlock label="Glass strength" hint="Glossy adds a stronger specular rim and deeper translucent glass.">
-                <Segmented
-                  value={aeroGlass}
-                  options={[
-                    ["light", "Light"],
-                    ["balanced", "Balanced"],
-                    ["glossy", "Glossy"],
-                  ]}
-                  onChange={(value) => setAeroGlass(value as AeroGlassStrength)}
-                />
-              </SettingBlock>
-
-              <SettingBlock label="Surface saturation" hint="Tune how vivid the Aero world and glass feel.">
-                <RangeControl value={aeroSaturation} min={80} max={160} step={2} suffix="%" onChange={setAeroSaturation} />
-              </SettingBlock>
-
-              <div className="grid gap-2.5 sm:grid-cols-2">
-                <ToggleCard label="Bubble ambience" hint="A small transform-only bubble layer." checked={aeroBubbles} onChange={setAeroBubbles} />
-                <ToggleCard label="Background motion" hint="Slow drift only; disabled by reduced-motion." checked={aeroBackgroundMotion} onChange={setAeroBackgroundMotion} />
+      <SettingsSection
+        icon={Palette}
+        title={theme === "oled" ? "Canvas" : "Aero"}
+        description={theme === "oled" ? "Keep the shell dark and quiet." : "The hillscape is fixed; tune only the material over it."}
+      >
+        {theme === "oled" ? (
+          <>
+            <SettingsRow label="Background" hint="OLED black stays the default.">
+              <div className="flex flex-wrap items-center gap-2">
+                {(Object.entries(BACKGROUND_PRESETS) as Array<[keyof typeof BACKGROUND_PRESETS, string]>).map(([name, color]) => (
+                  <Pressable
+                    key={name}
+                    strength="subtle"
+                    flash={false}
+                    onClick={() => setBackgroundColor(color)}
+                    className={`relative h-8 w-10 rounded-[9px] border ${backgroundColor === color ? "border-white/70" : "border-white/[0.10]"}`}
+                    style={{ background: color }}
+                    ariaLabel={`${name} background`}
+                    title={`${name} background`}
+                  >
+                    {backgroundColor === color && <span className="absolute inset-x-3 bottom-1 z-10 h-0.5 rounded-full bg-white/80" />}
+                  </Pressable>
+                ))}
+                <label className="flex h-8 items-center gap-2 rounded-[9px] border border-[var(--line)] bg-black/20 px-2 text-[8px] text-white/38">
+                  <input
+                    type="color"
+                    value={backgroundColor}
+                    onChange={(event) => setBackgroundColor(event.currentTarget.value)}
+                    className="size-4 cursor-pointer border-0 bg-transparent p-0"
+                    aria-label="Custom background color"
+                  />
+                  <span className="font-mono uppercase">{backgroundColor}</span>
+                </label>
               </div>
-            </>
-          )}
-        </SettingGroup>
-
-        <SettingGroup icon={Waves} title="Interface" description="Spacing and player placement stay independent from the theme.">
-          <SettingBlock label="Density" hint="Compact mode tightens the shell and player.">
-            <Segmented
-              value={density}
-              options={[
-                ["comfortable", "Comfortable"],
-                ["compact", "Compact"],
-              ]}
-              onChange={(value) => setDensity(value as DensityPreference)}
-            />
-          </SettingBlock>
-
-          <SettingBlock label="Player" hint="Float the player or pin it flush to the window edge.">
-            <Segmented
-              value={playerStyle}
-              options={[
-                ["floating", "Floating"],
-                ["flat", "Flat"],
-              ]}
-              onChange={(value) => setPlayerStyle(value as PlayerStyle)}
-            />
-          </SettingBlock>
-
-          <SettingBlock label="Accent" hint="Reserved for meaningful active states.">
-            <div className="flex flex-wrap gap-2">
-              {(Object.keys(ACCENT_COLORS) as AccentPreset[]).map((preset) => (
-                <Pressable
-                  key={preset}
-                  strength="subtle"
-                  flash={false}
-                  onClick={() => setAccent(preset)}
-                  className={`relative h-9 w-12 rounded-[10px] border transition-colors ${
-                    accent === preset ? "border-white/70" : "border-white/[0.10] hover:border-white/25"
-                  }`}
-                  style={{ background: ACCENT_COLORS[preset] }}
-                  ariaLabel={`${preset} accent`}
-                  title={`${preset} accent`}
-                >
-                  {accent === preset && <span className="absolute inset-x-3 bottom-1 z-10 h-0.5 rounded-full bg-black/65" />}
-                </Pressable>
-              ))}
-            </div>
-          </SettingBlock>
-        </SettingGroup>
-
-        <SettingGroup icon={Sparkles} title="Artwork ambience" description="Image-backed atmosphere around the song that is playing." wide>
-          <div className="grid gap-4 lg:grid-cols-2">
-            <SettingBlock label="Ambience strength" hint="Controls the overall image wash and halo.">
+            </SettingsRow>
+          </>
+        ) : (
+          <>
+            <SettingsRow label="Glass" hint="Keep it light for the cleanest Aero look.">
               <Segmented
-                value={ambienceStrength}
+                value={aeroGlass}
                 options={[
-                  ["soft", "Soft"],
+                  ["light", "Light"],
                   ["balanced", "Balanced"],
-                  ["rich", "Rich"],
+                  ["glossy", "Glossy"],
                 ]}
-                onChange={(value) => setAmbienceStrength(value as AmbienceStrength)}
+                onChange={(value) => setAeroGlass(value as AeroGlassStrength)}
               />
-            </SettingBlock>
+            </SettingsRow>
+            <SettingsRow label="Saturation" hint="Controls how vivid the sky, hills and glass feel.">
+              <RangeControl value={aeroSaturation} min={90} max={150} step={2} suffix="%" onChange={setAeroSaturation} />
+            </SettingsRow>
+            <SettingsRow label="Bubbles" hint="A few slow bubbles over the wallpaper.">
+              <Toggle checked={aeroBubbles} onChange={setAeroBubbles} />
+            </SettingsRow>
+            <SettingsRow label="Background motion" hint="A tiny landscape drift; off is cheaper and calmer.">
+              <Toggle checked={aeroBackgroundMotion} onChange={setAeroBackgroundMotion} />
+            </SettingsRow>
+          </>
+        )}
 
-            <SettingBlock label="Hero blur" hint="Blur the current cover while keeping its shape recognizable.">
+        <SettingsRow label="Accent" hint="Used for active controls and progress.">
+          <div className="flex flex-wrap gap-2">
+            {(Object.keys(ACCENT_COLORS) as AccentPreset[]).map((preset) => (
+              <Pressable
+                key={preset}
+                strength="subtle"
+                flash={false}
+                onClick={() => setAccent(preset)}
+                className={`relative h-8 w-10 rounded-[9px] border ${accent === preset ? "border-white/70" : "border-white/[0.10]"}`}
+                style={{ background: ACCENT_COLORS[preset] }}
+                ariaLabel={`${preset} accent`}
+                title={`${preset} accent`}
+              >
+                {accent === preset && <span className="absolute inset-x-3 bottom-1 z-10 h-0.5 rounded-full bg-black/65" />}
+              </Pressable>
+            ))}
+          </div>
+        </SettingsRow>
+      </SettingsSection>
+
+      <SettingsSection icon={SlidersHorizontal} title="Layout" description="Only the spacing choices that change how much fits on screen.">
+        <SettingsRow label="Density" hint="Compact tightens the shell and player.">
+          <Segmented
+            value={density}
+            options={[
+              ["comfortable", "Comfortable"],
+              ["compact", "Compact"],
+            ]}
+            onChange={(value) => setDensity(value as DensityPreference)}
+          />
+        </SettingsRow>
+        <SettingsRow label="Player" hint="Float it slightly or pin it flat to the window edge.">
+          <Segmented
+            value={playerStyle}
+            options={[
+              ["floating", "Floating"],
+              ["flat", "Flat"],
+            ]}
+            onChange={(value) => setPlayerStyle(value as PlayerStyle)}
+          />
+        </SettingsRow>
+      </SettingsSection>
+
+      <SettingsSection icon={Sparkles} title="Artwork" description="Keep the current song visible without turning the app into a light show.">
+        <SettingsRow label="Ambience" hint="Overall image wash and glow strength.">
+          <Segmented
+            value={ambienceStrength}
+            options={[
+              ["soft", "Soft"],
+              ["balanced", "Balanced"],
+              ["rich", "Rich"],
+            ]}
+            onChange={(value) => setAmbienceStrength(value as AmbienceStrength)}
+          />
+        </SettingsRow>
+
+        <div className="grid gap-2 py-3 sm:grid-cols-3">
+          <ToggleTile label="Hero background" checked={heroArtworkBackdrop} onChange={setHeroArtworkBackdrop} />
+          <ToggleTile label="Player backdrop" checked={playerArtworkBackdrop} onChange={setPlayerArtworkBackdrop} />
+          <ToggleTile label="Artwork glow" checked={artworkGlow} onChange={setArtworkGlow} />
+        </div>
+
+        <details className="group border-t border-[var(--line)] py-3">
+          <summary className="cursor-pointer list-none text-[9px] font-medium text-white/42 transition-colors hover:text-white/72">
+            Fine tune hero
+          </summary>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="mb-2 text-[8px] text-white/28">Blur</p>
               <RangeControl value={heroBackdropBlur} min={0} max={24} step={1} suffix="px" onChange={setHeroBackdropBlur} />
-            </SettingBlock>
-
-            <SettingBlock label="Hero brightness" hint="Lift darker artwork without washing out the text.">
+            </div>
+            <div>
+              <p className="mb-2 text-[8px] text-white/28">Brightness</p>
               <RangeControl value={heroBackdropBrightness} min={80} max={140} step={1} suffix="%" onChange={setHeroBackdropBrightness} />
-            </SettingBlock>
-
-            <div className="grid gap-2.5 sm:grid-cols-3 lg:col-span-2">
-              <ToggleCard label="Hero background" hint="Current cover across the hero." checked={heroArtworkBackdrop} onChange={setHeroArtworkBackdrop} />
-              <ToggleCard label="Player backdrop" hint="Blurred cover under playback controls." checked={playerArtworkBackdrop} onChange={setPlayerArtworkBackdrop} />
-              <ToggleCard label="Artwork glow" hint="Image-colored halo around cover art." checked={artworkGlow} onChange={setArtworkGlow} />
             </div>
           </div>
-        </SettingGroup>
-      </div>
-    </motion.section>
+        </details>
+      </SettingsSection>
+    </motion.div>
   );
 }
 
-function PanelHeader({ title, description }: { title: string; description: string }) {
+function SettingsSection({ icon: Icon, title, description, children }: { icon: LucideIcon; title: string; description: string; children: ReactNode }) {
   return (
-    <div>
-      <h2 className="text-[18px] font-semibold tracking-[-0.035em]">{title}</h2>
-      <p className="mt-1 text-[10px] leading-4 text-white/30">{description}</p>
+    <section className="settings-surface themed-panel overflow-hidden rounded-[14px] border border-[var(--line)] bg-[var(--surface-1)]">
+      <div className="flex items-start gap-3 px-4 py-4 sm:px-5">
+        <span className="grid size-8 shrink-0 place-items-center rounded-[9px] bg-white/[0.045] text-white/48">
+          <Icon className="size-3.5" />
+        </span>
+        <div>
+          <h2 className="text-[12px] font-semibold tracking-[-0.02em] text-white/84">{title}</h2>
+          <p className="mt-1 text-[9px] leading-4 text-white/26">{description}</p>
+        </div>
+      </div>
+      <div className="border-t border-[var(--line)] px-4 sm:px-5">{children}</div>
+    </section>
+  );
+}
+
+function SettingsRow({ label, hint, children }: { label: string; hint: string; children: ReactNode }) {
+  return (
+    <div className="grid gap-3 border-b border-[var(--line)] py-3.5 last:border-b-0 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+      <div className="min-w-0">
+        <p className="text-[10px] font-medium text-white/68">{label}</p>
+        <p className="mt-1 text-[8px] leading-4 text-white/22">{hint}</p>
+      </div>
+      <div className="min-w-0 lg:justify-self-end">{children}</div>
     </div>
   );
 }
@@ -279,59 +283,34 @@ function ThemeChoice({ id, active, title, description, onClick }: { id: ThemeId;
   return (
     <Pressable
       strength="medium"
+      flash={false}
       onClick={onClick}
-      className={`themed-card min-h-28 rounded-[13px] border p-3.5 text-left ${active ? "border-white/55" : "border-white/[0.08]"}`}
+      className={`settings-theme-choice themed-card rounded-[11px] border p-3 text-left ${active ? "border-white/50" : "border-white/[0.08]"}`}
     >
-      <div className={`relative z-10 mb-3 h-10 overflow-hidden rounded-[9px] border border-white/[0.10] ${id === "oled" ? "bg-black" : "aero-theme-preview"}`}>
-        {id === "aero" && <span className="absolute left-3 top-2 size-4 rounded-full border border-white/50 bg-white/15" />}
-      </div>
-      <p className="relative z-10 text-[11px] font-semibold text-white/86">{title}</p>
-      <p className="relative z-10 mt-1 text-[8px] leading-4 text-white/30">{description}</p>
-    </Pressable>
-  );
-}
-
-function SettingGroup({ icon: Icon, title, description, children, wide = false }: { icon: LucideIcon; title: string; description: string; children: ReactNode; wide?: boolean }) {
-  return (
-    <div className={`themed-card rounded-[14px] border border-white/[0.07] bg-black/20 p-4 ${wide ? "xl:col-span-2" : ""}`}>
-      <div className="flex items-start gap-3">
-        <span className="grid size-8 shrink-0 place-items-center rounded-[9px] bg-white/[0.05] text-white/52">
-          <Icon className="size-3.5" />
-        </span>
+      <div className={`relative z-10 mb-3 h-11 overflow-hidden rounded-[8px] border border-white/[0.08] ${id === "oled" ? "bg-black" : "settings-aero-preview"}`} />
+      <div className="relative z-10 flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-[12px] font-semibold text-white/84">{title}</h3>
-          <p className="mt-1 text-[9px] leading-4 text-white/27">{description}</p>
+          <p className="text-[10px] font-semibold text-white/82">{title}</p>
+          <p className="mt-1 text-[8px] leading-4 text-white/27">{description}</p>
         </div>
+        <span className={`mt-0.5 size-2 rounded-full ${active ? "bg-[var(--accent)]" : "bg-white/[0.12]"}`} />
       </div>
-      <div className="mt-4 space-y-4">{children}</div>
-    </div>
-  );
-}
-
-function SettingBlock({ label, hint, children }: { label: string; hint: string; children: ReactNode }) {
-  return (
-    <div>
-      <div className="mb-2.5">
-        <p className="text-[10px] font-medium text-white/72">{label}</p>
-        <p className="mt-1 text-[8px] leading-4 text-white/25">{hint}</p>
-      </div>
-      {children}
-    </div>
+    </Pressable>
   );
 }
 
 function Segmented({ value, options, onChange }: { value: string; options: Array<[string, string]>; onChange: (value: string) => void }) {
   return (
-    <div className="inline-flex max-w-full flex-wrap gap-1 rounded-[10px] border border-[var(--line)] bg-black/20 p-1">
+    <div className="inline-flex max-w-full flex-wrap rounded-[9px] border border-[var(--line)] bg-black/20 p-1">
       {options.map(([option, label]) => (
         <Pressable
           key={option}
           strength="subtle"
           flash={false}
+          highlight={false}
           onClick={() => onChange(option)}
-          className={`relative rounded-[7px] px-3 py-2 text-[9px] transition-colors ${value === option ? "text-black" : "text-white/34 hover:text-white/68"}`}
+          className={`rounded-[7px] px-2.5 py-1.5 text-[8px] font-medium transition-colors ${value === option ? "bg-white text-black" : "text-white/30 hover:text-white/62"}`}
         >
-          {value === option && <span className="absolute inset-0 z-0 rounded-[7px] bg-[var(--accent)]" />}
           <span className="relative z-10">{label}</span>
         </Pressable>
       ))}
@@ -341,7 +320,7 @@ function Segmented({ value, options, onChange }: { value: string; options: Array
 
 function RangeControl({ value, min, max, step, suffix, onChange }: { value: number; min: number; max: number; step: number; suffix: string; onChange: (value: number) => void }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex min-w-[210px] items-center gap-3">
       <input
         type="range"
         min={min}
@@ -351,14 +330,12 @@ function RangeControl({ value, min, max, step, suffix, onChange }: { value: numb
         onChange={(event) => onChange(Number(event.currentTarget.value))}
         className="settings-range min-w-0 flex-1"
       />
-      <output className="min-w-12 rounded-[8px] border border-[var(--line)] bg-black/20 px-2 py-1.5 text-center font-mono text-[8px] text-white/50">
-        {value}{suffix}
-      </output>
+      <output className="min-w-11 text-right font-mono text-[8px] text-white/38">{value}{suffix}</output>
     </div>
   );
 }
 
-function ToggleCard({ label, hint, checked, onChange }: { label: string; hint: string; checked: boolean; onChange: (checked: boolean) => void }) {
+function ToggleTile({ label, checked, onChange }: { label: string; checked: boolean; onChange: (checked: boolean) => void }) {
   return (
     <Pressable
       strength="subtle"
@@ -366,24 +343,37 @@ function ToggleCard({ label, hint, checked, onChange }: { label: string; hint: s
       role="switch"
       ariaChecked={checked}
       onClick={() => onChange(!checked)}
-      className="themed-card flex items-center justify-between gap-3 rounded-[11px] border border-[var(--line)] bg-white/[0.02] px-3 py-3 text-left"
+      className="flex items-center justify-between gap-3 rounded-[10px] border border-[var(--line)] bg-black/15 px-3 py-2.5 text-left"
     >
-      <span className="relative z-10 min-w-0">
-        <span className="block text-[9px] font-medium text-white/70">{label}</span>
-        <span className="mt-1 block text-[8px] leading-3 text-white/25">{hint}</span>
-      </span>
-      <Toggle checked={checked} />
+      <span className="relative z-10 text-[8px] font-medium text-white/52">{label}</span>
+      <ToggleVisual checked={checked} />
     </Pressable>
   );
 }
 
-function Toggle({ checked }: { checked: boolean }) {
+function Toggle({ checked, onChange }: { checked: boolean; onChange: (checked: boolean) => void }) {
   return (
-    <span className={`relative z-10 h-6 w-10 shrink-0 rounded-full transition-colors ${checked ? "bg-[var(--accent)]" : "bg-white/[0.10]"}`}>
+    <Pressable
+      strength="subtle"
+      flash={false}
+      highlight={false}
+      role="switch"
+      ariaChecked={checked}
+      onClick={() => onChange(!checked)}
+      className="rounded-full"
+    >
+      <ToggleVisual checked={checked} />
+    </Pressable>
+  );
+}
+
+function ToggleVisual({ checked }: { checked: boolean }) {
+  return (
+    <span className={`relative z-10 block h-5 w-9 rounded-full transition-colors ${checked ? "bg-[var(--accent)]" : "bg-white/[0.09]"}`}>
       <motion.span
-        animate={{ x: checked ? 18 : 3, scale: checked ? [1, 0.9, 1] : 1 }}
-        transition={{ type: "spring", stiffness: 470, damping: 25 }}
-        className={`absolute left-0 top-0.5 size-5 rounded-full ${checked ? "bg-black" : "bg-white/68"}`}
+        animate={{ x: checked ? 17 : 3 }}
+        transition={{ type: "spring", stiffness: 520, damping: 34 }}
+        className={`absolute left-0 top-0.5 size-4 rounded-full ${checked ? "bg-black" : "bg-white/65"}`}
       />
     </span>
   );

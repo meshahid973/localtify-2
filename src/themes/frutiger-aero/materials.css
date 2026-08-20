@@ -3,14 +3,19 @@
 :root[data-theme="aero"] .themed-player,
 :root[data-theme="aero"] .home-hero {
   background:
-    linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.04) 43%, rgba(20,120,158,.14) 44%, rgba(6,67,97,.34)),
-    var(--ui-surface);
-  border-color: rgba(255,255,255,.28);
+    linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.035) 46%, rgba(12,93,127,.10)),
+    rgba(232, 248, 255, .16);
+  border-color: rgba(255,255,255,.24);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.30),
-    inset 0 -1px 0 rgba(0,66,102,.22),
-    0 14px 34px rgba(0,63,95,.16);
+    inset 0 1px 0 rgba(255,255,255,.24),
+    0 12px 28px rgba(0,61,92,.12);
   backdrop-filter: blur(var(--aero-glass-blur, 10px)) saturate(var(--aero-saturation, 120%));
+}
+
+:root[data-theme="aero"] .settings-surface {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.035)),
+    rgba(12, 73, 99, .22);
 }
 
 :root[data-theme="aero"][data-aero-glass="light"] {
@@ -28,24 +33,28 @@
 :root[data-theme="aero"] .themed-button,
 :root[data-theme="aero"] .pressable.themed-button {
   background:
-    linear-gradient(180deg, rgba(255,255,255,.34), rgba(255,255,255,.09) 48%, rgba(0,113,161,.16) 49%, rgba(0,70,105,.24)),
-    rgba(30, 140, 181, .36);
-  border: 1px solid rgba(255,255,255,.34);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.34), 0 5px 16px rgba(0,65,100,.14);
+    linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,.06) 52%, rgba(0,96,139,.13)),
+    rgba(24, 126, 166, .30);
+  border: 1px solid rgba(255,255,255,.28);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.26), 0 4px 12px rgba(0,65,100,.10);
 }
 
 :root[data-theme="aero"] .themed-sidebar,
 :root[data-theme="aero"] .themed-titlebar {
-  background: var(--ui-sidebar-bg);
-  backdrop-filter: blur(12px) saturate(var(--aero-saturation, 120%));
-  border-color: rgba(255,255,255,.25);
+  background: rgba(8, 47, 69, .34);
+  backdrop-filter: blur(10px) saturate(var(--aero-saturation, 120%));
+  border-color: rgba(255,255,255,.18);
 }
 
 :root[data-theme="aero"] .themed-content {
-  background: var(--ui-content-bg);
+  background: rgba(4, 31, 46, .16);
+}
+
+:root[data-theme="aero"] .settings-theme-choice {
+  background: rgba(5, 47, 70, .22);
 }
 
 .aero-gloss {
-  background: linear-gradient(180deg, rgba(255,255,255,.36), rgba(255,255,255,.08) 48%, transparent 49%);
+  background: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,.05) 48%, transparent 49%);
   mix-blend-mode: screen;
 }

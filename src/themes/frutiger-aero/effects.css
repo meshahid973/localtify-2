@@ -6,48 +6,33 @@
   display: block;
 }
 
-.aero-world {
+.aero-landscape {
+  filter: saturate(var(--aero-saturation, 120%)) brightness(1.035);
+  transform: scale(1.015);
+  transform-origin: 50% 52%;
+  will-change: transform;
+}
+
+.aero-landscape-wash {
   background:
-    radial-gradient(circle at 18% 12%, rgba(255,255,255,.9) 0 3%, rgba(255,255,255,.34) 8%, transparent 22%),
-    radial-gradient(ellipse at 78% 18%, rgba(255,255,255,.52), transparent 22%),
-    linear-gradient(180deg, var(--aero-top, #4fbef6) 0%, var(--aero-mid, #8de0ff) 47%, var(--aero-water, #2aa5df) 67%, var(--aero-bottom, #9ae77b) 100%);
-  filter: saturate(var(--aero-saturation, 120%));
+    linear-gradient(180deg, rgba(255,255,255,.05), transparent 42%, rgba(8,80,108,.08)),
+    radial-gradient(circle at 80% 12%, rgba(255,255,255,.10), transparent 26%);
 }
 
-.aero-world::before,
-.aero-world::after {
-  content: "";
-  position: absolute;
-  inset: -8%;
-  pointer-events: none;
-}
-
-.aero-world::before {
-  background:
-    radial-gradient(ellipse at 15% 77%, rgba(119,221,82,.82) 0 13%, transparent 14%),
-    radial-gradient(ellipse at 85% 82%, rgba(89,201,69,.72) 0 15%, transparent 16%),
-    radial-gradient(ellipse at 52% 70%, rgba(255,255,255,.18), transparent 34%);
-  transform: translate3d(0,0,0);
-}
-
-:root[data-aero-motion="on"] .aero-world::before {
-  animation: aero-drift 18s ease-in-out infinite alternate;
-}
-
-.aero-world::after {
-  background: linear-gradient(180deg, rgba(255,255,255,.08), transparent 38%, rgba(0,70,112,.10));
+:root[data-aero-motion="on"] .aero-landscape {
+  animation: aero-landscape-drift 26s ease-in-out infinite alternate;
 }
 
 .aero-bubble {
   position: absolute;
   left: var(--bubble-x);
-  bottom: -80px;
+  bottom: -72px;
   width: var(--bubble-size);
   height: var(--bubble-size);
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.58);
-  background: radial-gradient(circle at 32% 27%, rgba(255,255,255,.78), rgba(255,255,255,.12) 34%, rgba(63,179,230,.10) 62%, rgba(255,255,255,.28));
-  box-shadow: inset -5px -7px 12px rgba(40,140,190,.10), 0 4px 18px rgba(0,104,160,.09);
+  border: 1px solid rgba(255,255,255,.60);
+  background: radial-gradient(circle at 31% 26%, rgba(255,255,255,.84), rgba(255,255,255,.13) 34%, rgba(78,187,226,.10) 64%, rgba(255,255,255,.24));
+  box-shadow: inset -5px -7px 12px rgba(40,140,190,.08), 0 4px 18px rgba(0,104,160,.07);
   opacity: var(--bubble-opacity);
   transform: translate3d(0,0,0);
   animation: aero-bubble-rise var(--bubble-duration) linear var(--bubble-delay) infinite;
@@ -57,23 +42,30 @@
   display: none;
 }
 
-@keyframes aero-bubble-rise {
-  0% { transform: translate3d(0, 0, 0) scale(.9); }
-  45% { transform: translate3d(15px, -45vh, 0) scale(1); }
-  100% { transform: translate3d(-10px, -105vh, 0) scale(1.04); }
+.settings-aero-preview {
+  background:
+    radial-gradient(circle at 80% 18%, rgba(255,255,255,.55), transparent 24%),
+    linear-gradient(165deg, transparent 52%, rgba(83,191,59,.94) 53% 73%, rgba(38,134,54,.98) 74%),
+    linear-gradient(180deg, #5ab8ee 0%, #a8e3ff 100%);
 }
 
-@keyframes aero-drift {
-  from { transform: translate3d(-1.5%, 0, 0) scale(1.01); }
-  to { transform: translate3d(1.5%, -1%, 0) scale(1.035); }
+@keyframes aero-bubble-rise {
+  0% { transform: translate3d(0, 0, 0) scale(.92); }
+  50% { transform: translate3d(10px, -48vh, 0) scale(1); }
+  100% { transform: translate3d(-7px, -104vh, 0) scale(1.03); }
+}
+
+@keyframes aero-landscape-drift {
+  from { transform: scale(1.015) translate3d(-.35%, 0, 0); }
+  to { transform: scale(1.035) translate3d(.45%, -.25%, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .aero-bubble,
-  .aero-world::before { animation: none !important; }
+  .aero-landscape { animation: none !important; }
 }
 
 :root[data-motion="off"] .aero-bubble,
-:root[data-motion="off"] .aero-world::before {
+:root[data-motion="off"] .aero-landscape {
   animation: none !important;
 }
