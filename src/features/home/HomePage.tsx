@@ -4,6 +4,8 @@ import { FolderPlus, Library, Play } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { albumArtworkFor } from "../../ALBUM";
 import { AlbumArtwork } from "../../components/ui/AlbumArtwork";
+import { PageFrame, PageHeader, SectionHeading } from "../../components/ui/Page";
+import { MOTION } from "../../lib/motion";
 import { useLibraryStore } from "../library/library.store";
 import { useNavigationStore } from "../navigation/navigation.store";
 import { usePlayerStore } from "../player/player.store";
@@ -23,8 +25,7 @@ export function HomePage() {
   const featured = player.currentTrack ?? tracks[0] ?? null;
   const heroArtwork = featured ? albumArtworkFor(featured.artworkKey) : albumArtworkFor("localtify-home-hero");
   const quickPicks = tracks.slice(0, 6);
-  const secondBatch = tracks.slice(6, 12);
-  const recentTracks = secondBatch.length ? secondBatch : tracks.slice(0, 6);
+  const recentTracks = tracks.slice(0, 6);
 
   async function chooseFolder() {
     if (!isTauri()) return;
@@ -33,25 +34,15 @@ export function HomePage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-[1480px] px-7 pb-16 pt-7 lg:px-10">
-      <motion.header
-        initial={reduceMotion ? false : { opacity: 0, y: -6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="flex items-end gap-4"
-      >
-        <div>
-          <p className="text-[10px] font-medium text-white/28">{greeting()}</p>
-          <h1 className="mt-1 text-[32px] font-semibold tracking-[-0.055em] text-white">Your music.</h1>
-        </div>
-
-        <div className="ml-auto flex items-center gap-3">
-          <span className="hidden text-[10px] text-white/22 lg:block">
-            {tracks.length} tracks · {folders.length} folders
-          </span>
+    <PageFrame>
+      <PageHeader
+        eyebrow={greeting()}
+        title="Listen locally."
+        meta={`${tracks.length} tracks · ${folders.length} folders`}
+        actions={
           <motion.button
             type="button"
-            whileHover={reduceMotion ? undefined : { y: -1, scale: 1.015 }}
+            whileHover={reduceMotion ? undefined : { y: -1 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => void chooseFolder()}
             disabled={scanning}
@@ -60,76 +51,65 @@ export function HomePage() {
             <FolderPlus className="size-3.5" />
             {scanning ? "Scanning…" : "Add music"}
           </motion.button>
-        </div>
-      </motion.header>
+        }
+      />
 
       <motion.section
-        initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+        initial={reduceMotion ? false : { opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
-        className="relative mt-6 overflow-hidden rounded-[20px] border border-white/[0.055] bg-[#090909]"
+        transition={{ ...MOTION.section, delay: 0.04 }}
+        className="relative mt-6 overflow-hidden rounded-[18px] border border-[var(--line)] bg-[var(--surface-1)]"
       >
         {heroArtwork && (
           <img
             src={heroArtwork}
             alt=""
             aria-hidden
-            className="pointer-events-none absolute right-0 top-1/2 h-[360px] w-[360px] -translate-y-1/2 scale-125 rounded-full object-cover opacity-[0.12] blur-[70px]"
+            className="pointer-events-none absolute right-0 top-1/2 h-[340px] w-[340px] -translate-y-1/2 scale-125 rounded-full object-cover opacity-[0.09] blur-[72px]"
           />
         )}
 
-        <div className="relative grid min-h-[330px] items-center gap-8 px-8 py-8 md:grid-cols-[minmax(0,1fr)_260px] md:px-10 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="relative grid min-h-[300px] items-center gap-8 px-8 py-8 md:grid-cols-[minmax(0,1fr)_230px] md:px-10 lg:grid-cols-[minmax(0,1fr)_260px]">
           <div className="max-w-[760px]">
-            <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
-              {featured ? "Now in your library" : "Private · Native · Local"}
+            <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/28">
+              {featured ? "Now playing" : "On this device"}
             </p>
 
             <motion.h2
               key={featured?.id ?? "empty"}
               initial={reduceMotion ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.34, delay: 0.08 }}
-              className="mt-4 max-w-[760px] text-[clamp(2.8rem,5.4vw,5.6rem)] font-semibold leading-[0.92] tracking-[-0.072em] text-white"
+              transition={{ ...MOTION.enter, delay: 0.07 }}
+              className="mt-4 max-w-[760px] text-[clamp(2.6rem,5vw,5rem)] font-semibold leading-[0.94] tracking-[-0.07em] text-white"
             >
-              {featured?.title ?? "A quieter place for your music."}
+              {featured?.title ?? "Your music. Nothing else."}
             </motion.h2>
 
-            <p className="mt-5 max-w-xl text-[12px] leading-5 text-white/42">
+            <p className="mt-5 max-w-xl text-[11px] leading-5 text-white/38">
               {featured
                 ? `${featured.artistName}${featured.albumTitle ? ` · ${featured.albumTitle}` : ""}`
-                : "Add a folder once. Localtify keeps the library on your device and out of the way."}
+                : "A native local player that stays quiet until you need it."}
             </p>
 
             <div className="mt-7 flex items-center gap-3">
-              {featured ? (
-                <motion.button
-                  type="button"
-                  whileHover={reduceMotion ? undefined : { scale: 1.025 }}
-                  whileTap={{ scale: 0.96 }}
-                  transition={{ type: "spring", stiffness: 430, damping: 28 }}
-                  onClick={() => void playTrack(featured.id)}
-                  className="flex h-10 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[10px] font-bold text-black"
-                >
-                  <Play className="size-3.5 fill-current" />
-                  Play
-                </motion.button>
-              ) : (
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => void chooseFolder()}
-                  className="h-10 rounded-full bg-[var(--accent)] px-5 text-[10px] font-bold text-black"
-                >
-                  Add your first folder
-                </motion.button>
-              )}
+              <motion.button
+                type="button"
+                whileHover={reduceMotion ? undefined : { scale: 1.025 }}
+                whileTap={{ scale: 0.96 }}
+                transition={MOTION.spring}
+                onClick={() => featured ? void playTrack(featured.id) : void chooseFolder()}
+                className="flex h-10 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-[10px] font-bold text-black"
+              >
+                {featured ? <Play className="size-3.5 fill-current" /> : <FolderPlus className="size-3.5" />}
+                {featured ? "Play" : "Add music"}
+              </motion.button>
 
               <motion.button
                 type="button"
-                whileHover={reduceMotion ? undefined : { x: 2 }}
+                whileHover={reduceMotion ? undefined : { y: -1 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setPage("library")}
-                className="flex h-10 items-center gap-2 rounded-full border border-white/[0.08] px-4 text-[10px] font-medium text-white/48 transition-colors hover:border-white/[0.14] hover:text-white/80"
+                className="flex h-10 items-center gap-2 rounded-full border border-[var(--line)] bg-black/30 px-4 text-[10px] font-medium text-white/48 transition-colors hover:bg-white/[0.035] hover:text-white/78"
               >
                 <Library className="size-3.5" />
                 Library
@@ -138,17 +118,16 @@ export function HomePage() {
           </div>
 
           <motion.div
-            initial={reduceMotion ? false : { opacity: 0, x: 16, scale: 0.96 }}
+            initial={reduceMotion ? false : { opacity: 0, x: 12, scale: 0.97 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 150, damping: 20, delay: 0.08 }}
-            whileHover={reduceMotion ? undefined : { scale: 1.018 }}
-            className="relative mx-auto hidden aspect-square w-full max-w-[300px] md:block"
+            transition={{ ...MOTION.softSpring, delay: 0.08 }}
+            whileHover={reduceMotion ? undefined : { y: -3, scale: 1.01 }}
+            className="relative mx-auto hidden aspect-square w-full max-w-[260px] md:block"
           >
-            <div className="absolute inset-3 rounded-[22px] bg-white/[0.035] blur-2xl" />
             <AlbumArtwork
               artworkKey={featured?.artworkKey ?? "localtify-home-hero"}
               alt={featured ? `${featured.title} artwork` : "Localtify artwork"}
-              className="artwork-glow-target relative size-full rounded-[18px] ring-1 ring-inset ring-white/[0.08]"
+              className="artwork-glow-target relative size-full rounded-[16px] ring-1 ring-inset ring-white/[0.07]"
             />
           </motion.div>
         </div>
@@ -161,27 +140,27 @@ export function HomePage() {
       )}
 
       <section className="performance-section mt-9">
-        <SectionHeader title="Quick picks" meta={quickPicks.length ? "Play something now" : "Your library is empty"} />
+        <SectionHeading title="Quick picks" meta={quickPicks.length ? "From your library" : "Nothing here yet"} />
         {quickPicks.length ? (
           <div className="grid gap-2.5 md:grid-cols-2 xl:grid-cols-3">
             {quickPicks.map((track, index) => (
               <motion.button
                 key={track.id}
                 type="button"
-                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 7 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.28, delay: Math.min(index * 0.035, 0.16) }}
+                transition={{ duration: 0.24, delay: Math.min(index * 0.03, 0.14), ease: MOTION.enter.ease }}
                 whileHover={reduceMotion ? undefined : { y: -2 }}
                 whileTap={{ scale: 0.992 }}
                 onClick={() => void playTrack(track.id)}
-                className="group flex h-[64px] min-w-0 items-center overflow-hidden rounded-[12px] border border-white/[0.045] bg-[#0b0b0b] text-left transition-colors hover:border-white/[0.09] hover:bg-[#111]"
+                className="group flex h-[62px] min-w-0 items-center overflow-hidden rounded-[11px] border border-[var(--line)] bg-[var(--surface-1)] text-left transition-colors hover:bg-[var(--surface-2)]"
               >
-                <AlbumArtwork artworkKey={track.artworkKey} alt={`${track.title} artwork`} className="size-[64px] shrink-0" />
+                <AlbumArtwork artworkKey={track.artworkKey} alt={`${track.title} artwork`} className="size-[62px] shrink-0" />
                 <span className="min-w-0 px-3">
-                  <span className="block truncate text-[11px] font-semibold text-white/86">{track.title}</span>
-                  <span className="mt-1 block truncate text-[9px] text-white/28">{track.artistName}</span>
+                  <span className="block truncate text-[11px] font-semibold text-white/84">{track.title}</span>
+                  <span className="mt-1 block truncate text-[9px] text-white/26">{track.artistName}</span>
                 </span>
-                <span className="ml-auto mr-3 grid size-8 shrink-0 translate-x-1 place-items-center rounded-full bg-[var(--accent)] text-black opacity-0 shadow-lg transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100">
+                <span className="ml-auto mr-3 grid size-8 shrink-0 translate-y-1 place-items-center rounded-full bg-white text-black opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
                   <Play className="ml-0.5 size-3 fill-current" />
                 </span>
               </motion.button>
@@ -194,46 +173,37 @@ export function HomePage() {
 
       {recentTracks.length > 0 && (
         <section className="performance-section mt-10">
-          <SectionHeader title="Recently added" meta={`${recentTracks.length} covers`} />
+          <SectionHeading title="Recently added" meta={`${recentTracks.length} covers`} />
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {recentTracks.map((track, index) => (
               <motion.button
                 key={track.id}
                 type="button"
-                initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: Math.min(index * 0.035, 0.18) }}
+                transition={{ duration: 0.26, delay: Math.min(index * 0.03, 0.15), ease: MOTION.enter.ease }}
                 whileHover={reduceMotion ? undefined : { y: -4 }}
                 onClick={() => void playTrack(track.id)}
                 className="group min-w-0 text-left"
               >
-                <div className="relative aspect-square overflow-hidden rounded-[14px] bg-[#0b0b0b] ring-1 ring-inset ring-white/[0.05]">
+                <div className="relative aspect-square overflow-hidden rounded-[13px] bg-[var(--surface-1)] ring-1 ring-inset ring-white/[0.045]">
                   <AlbumArtwork
                     artworkKey={track.artworkKey}
                     alt={`${track.title} artwork`}
-                    className="size-full transition-transform duration-300 ease-out group-hover:scale-[1.025]"
+                    className="size-full transition-transform duration-300 ease-out group-hover:scale-[1.02]"
                   />
-                  <span className="absolute bottom-3 right-3 grid size-9 translate-y-2 place-items-center rounded-full bg-[var(--accent)] text-black opacity-0 shadow-xl transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+                  <span className="absolute bottom-3 right-3 grid size-9 translate-y-2 place-items-center rounded-full bg-white text-black opacity-0 shadow-xl transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
                     <Play className="ml-0.5 size-3.5 fill-current" />
                   </span>
                 </div>
-                <p className="mt-3 truncate text-[11px] font-semibold text-white/82">{track.title}</p>
-                <p className="mt-1 truncate text-[9px] text-white/26">{track.artistName}</p>
+                <p className="mt-3 truncate text-[11px] font-semibold text-white/80">{track.title}</p>
+                <p className="mt-1 truncate text-[9px] text-white/24">{track.artistName}</p>
               </motion.button>
             ))}
           </div>
         </section>
       )}
-    </main>
-  );
-}
-
-function SectionHeader({ title, meta }: { title: string; meta: string }) {
-  return (
-    <div className="mb-4 flex items-end gap-3">
-      <h3 className="text-[22px] font-semibold tracking-[-0.045em] text-white">{title}</h3>
-      <span className="pb-0.5 text-[9px] text-white/20">{meta}</span>
-    </div>
+    </PageFrame>
   );
 }
 
@@ -241,10 +211,10 @@ function EmptyState({ onClick }: { onClick: () => void }) {
   return (
     <motion.button
       type="button"
-      whileHover={{ scale: 1.004 }}
+      whileHover={{ scale: 1.003 }}
       whileTap={{ scale: 0.997 }}
       onClick={onClick}
-      className="flex min-h-28 w-full items-center justify-center rounded-[12px] border border-dashed border-white/[0.075] bg-[#080808] text-[10px] text-white/28 transition-colors hover:border-white/[0.13] hover:text-white/55"
+      className="flex min-h-28 w-full items-center justify-center rounded-[11px] border border-dashed border-white/[0.07] bg-[var(--surface-1)] text-[10px] text-white/26 transition-colors hover:border-white/[0.12] hover:text-white/52"
     >
       Add music to build your home
     </motion.button>

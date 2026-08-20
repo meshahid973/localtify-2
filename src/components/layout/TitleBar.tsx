@@ -14,18 +14,11 @@ export function TitleBar() {
   return (
     <header
       data-tauri-drag-region
-      className="fixed inset-x-0 top-0 z-50 flex h-[var(--titlebar-height)] select-none items-center border-b border-white/[0.04] bg-[#050505]"
+      className="fixed inset-x-0 top-0 z-50 flex h-[var(--titlebar-height)] select-none items-center border-b border-[var(--line)] bg-black"
     >
-      <div data-tauri-drag-region className="flex min-w-0 flex-1 items-center px-3">
-        <span className="accent-dot size-1.5 rounded-full bg-[var(--accent)]" />
+      <div data-tauri-drag-region className="flex min-w-0 flex-1 items-center px-4">
+        <span className="pointer-events-none text-[9px] font-semibold tracking-[-0.015em] text-white/32">localtify</span>
       </div>
-
-      <span
-        data-tauri-drag-region
-        className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-[8px] font-semibold uppercase tracking-[0.28em] text-white/24"
-      >
-        localtify
-      </span>
 
       <div className="flex h-full">
         <WindowButton label="Minimize" onClick={() => void perform("minimize")}>
@@ -58,8 +51,8 @@ function WindowButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className={`grid w-10 place-items-center text-white/24 transition-colors hover:text-white/72 ${
-        danger ? "hover:bg-red-600/80" : "hover:bg-white/[0.05]"
+      className={`grid w-10 place-items-center text-white/22 transition-colors hover:text-white/70 ${
+        danger ? "hover:bg-red-600/80" : "hover:bg-white/[0.045]"
       }`}
     >
       {children}

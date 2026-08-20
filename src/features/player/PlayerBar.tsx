@@ -1,7 +1,9 @@
 import type { CSSProperties, ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ListMusic, Pause, Play, Repeat2, Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
+import { Pause, Play, Repeat2, Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
 import { AlbumArtwork } from "../../components/ui/AlbumArtwork";
+import { formatDuration } from "../../lib/format";
+import { MOTION } from "../../lib/motion";
 import { useLibraryStore } from "../library/library.store";
 import { useSettingsStore } from "../settings/settings.store";
 import { usePlayerStore } from "./player.store";
@@ -41,26 +43,26 @@ export function PlayerBar() {
 
   return (
     <footer className={`fixed inset-x-0 bottom-0 z-40 h-[var(--player-height)] bg-black ${floating ? "px-2 pb-2 pt-1.5" : "p-0"}`}>
-      <div className={`grid h-full grid-cols-[minmax(220px,1fr)_minmax(340px,1.28fr)_minmax(180px,1fr)] items-center gap-5 border border-white/[0.055] bg-[#080808] px-3.5 ${floating ? "rounded-[14px] shadow-[0_-12px_40px_rgba(0,0,0,.28)]" : "rounded-none border-x-0 border-b-0"}`}>
+      <div className={`grid h-full grid-cols-[minmax(210px,1fr)_minmax(340px,1.3fr)_minmax(160px,.9fr)] items-center gap-5 border border-[var(--line)] bg-[var(--surface-1)] px-3.5 ${floating ? "rounded-[13px] shadow-[0_-10px_36px_rgba(0,0,0,.25)]" : "rounded-none border-x-0 border-b-0"}`}>
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.div
             key={current?.id ?? "empty"}
-            initial={{ opacity: 0, x: -8 }}
+            initial={{ opacity: 0, x: -6 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 6 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, x: 5 }}
+            transition={MOTION.quick}
             className="flex min-w-0 items-center gap-3"
           >
-            <AlbumArtwork artworkKey={current?.artworkKey ?? "empty"} className="artwork-glow-target size-11 shrink-0 rounded-[8px] ring-1 ring-inset ring-white/[0.06]" />
+            <AlbumArtwork artworkKey={current?.artworkKey ?? "empty"} className="artwork-glow-target size-11 shrink-0 rounded-[8px] ring-1 ring-inset ring-white/[0.05]" />
             <div className="min-w-0">
-              <p className="truncate text-[10px] font-semibold text-white/88">{current?.title ?? "Nothing playing"}</p>
-              <p className="mt-1 truncate text-[8px] text-white/26">{current?.artistName ?? "Choose something from your library"}</p>
+              <p className="truncate text-[10px] font-semibold text-white/86">{current?.title ?? "Nothing playing"}</p>
+              <p className="mt-1 truncate text-[8px] text-white/24">{current?.artistName ?? "Choose something from your library"}</p>
             </div>
           </motion.div>
         </AnimatePresence>
 
         <div className="flex min-w-0 flex-col items-center">
-          <div className="flex items-center gap-4 text-white/30">
+          <div className="flex items-center gap-4 text-white/28">
             <ControlButton active={player.shuffle} label="Shuffle" onClick={() => void toggleShuffle()}>
               <Shuffle className="size-3.5" />
             </ControlButton>
@@ -71,11 +73,11 @@ export function PlayerBar() {
               type="button"
               aria-label={playing ? "Pause" : "Play"}
               disabled={!current}
-              whileHover={current ? { scale: 1.06 } : undefined}
-              whileTap={current ? { scale: 0.93 } : undefined}
-              transition={{ type: "spring", stiffness: 480, damping: 28 }}
+              whileHover={current ? { scale: 1.055 } : undefined}
+              whileTap={current ? { scale: 0.94 } : undefined}
+              transition={MOTION.spring}
               onClick={() => void togglePlayback()}
-              className="accent-dot grid size-9 place-items-center rounded-full bg-[var(--accent)] text-black disabled:bg-white/20 disabled:shadow-none"
+              className="grid size-9 place-items-center rounded-full bg-[var(--accent)] text-black disabled:bg-white/18"
             >
               {playing ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}
             </motion.button>
@@ -88,7 +90,7 @@ export function PlayerBar() {
             </ControlButton>
           </div>
 
-          <div className="mt-2 flex w-full max-w-[610px] items-center gap-2 text-[7px] tabular-nums text-white/18">
+          <div className="mt-2 flex w-full max-w-[610px] items-center gap-2 text-[7px] tabular-nums text-white/17">
             <span className="w-9 text-right">{formatDuration(player.positionMs)}</span>
             <input
               aria-label="Playback position"
@@ -104,13 +106,12 @@ export function PlayerBar() {
           </div>
         </div>
 
-        <div className="ml-auto flex w-full max-w-[205px] items-center justify-end gap-2">
-          <ListMusic className="mr-2 size-3.5 text-white/16" />
+        <div className="ml-auto flex w-full max-w-[180px] items-center justify-end gap-2">
           <button
             type="button"
             aria-label={player.muted ? "Unmute" : "Mute"}
             onClick={() => void toggleMute()}
-            className="text-white/28 transition-colors hover:text-white/70"
+            className="text-white/26 transition-colors hover:text-white/68"
           >
             {player.muted ? <VolumeX className="size-3.5" /> : <Volume2 className="size-3.5" />}
           </button>
@@ -137,19 +138,13 @@ function ControlButton({ children, label, active = false, onClick }: { children:
       type="button"
       aria-label={label}
       title={label}
-      whileHover={{ scale: 1.08, y: -1 }}
-      whileTap={{ scale: 0.92 }}
-      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+      whileHover={{ scale: 1.07, y: -1 }}
+      whileTap={{ scale: 0.93 }}
+      transition={MOTION.spring}
       onClick={onClick}
-      className={`relative transition-colors ${active ? "text-[var(--accent)]" : "hover:text-white/78"}`}
+      className={`relative transition-colors ${active ? "text-[var(--accent)]" : "hover:text-white/76"}`}
     >
       {children}
     </motion.button>
   );
-}
-
-function formatDuration(durationMs: number) {
-  const totalSeconds = Math.floor(durationMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  return `${minutes}:${String(totalSeconds % 60).padStart(2, "0")}`;
 }
